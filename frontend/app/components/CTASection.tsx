@@ -2,10 +2,30 @@
 
 import { useEffect, useRef, useState } from "react";
 import LiveTerminal from "./LiveTerminal";
+import MagneticWrapper from "./MagneticWrapper";
 
 export default function CTASection() {
   const [visible, setVisible] = useState(false);
+  const [isRevealing, setIsRevealing] = useState(false);
+  const [revealedKey, setRevealedKey] = useState("");
+  const fullKey = "•••••••••••••6f2a"; // Simplified for the demo, or use actual
   const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (!isRevealing) {
+      setRevealedKey("");
+      return;
+    }
+
+    let i = 0;
+    const interval = setInterval(() => {
+      setRevealedKey(fullKey.slice(0, i + 1));
+      i++;
+      if (i >= fullKey.length) clearInterval(interval);
+    }, 25);
+
+    return () => clearInterval(interval);
+  }, [isRevealing]);
 
   useEffect(() => {
     const el = sectionRef.current;
@@ -96,22 +116,30 @@ export default function CTASection() {
 
               {/* Key reveal */}
               <div
-                className="rounded-lg px-4 py-3 font-mono text-sm flex items-center gap-3 mb-6"
+                className="rounded-lg px-4 py-3 font-mono text-sm flex items-center gap-3 mb-6 min-h-[50px]"
                 style={{
                   background: "#000",
                   border: "1px solid rgba(110,20,212,0.2)",
+                  boxShadow: isRevealing ? "0 0 15px rgba(34, 197, 94, 0.1)" : "none",
+                  transition: "box-shadow 300ms ease",
                 }}
               >
                 <span style={{ color: "rgba(255,255,255,0.3)" }}>sk_live</span>
                 <span style={{ color: "rgba(255,255,255,0.5)" }}>_</span>
-                <span style={{ color: "#6E14D4" }}>•••••••••••••</span>
-                <span style={{ color: "#22C55E" }}>6f2a</span>
+                {isRevealing ? (
+                  <span style={{ color: "#22C55E" }}>{revealedKey}</span>
+                ) : (
+                  <span style={{ color: "rgba(255,255,255,0.1)" }}>•••••••••••••6f2a</span>
+                )}
                 <button
-                  className="ml-auto text-xs px-2 py-0.5 rounded transition-all duration-200"
+                  onClick={() => setIsRevealing(!isRevealing)}
+                  className="ml-auto text-xs px-2 py-1 rounded transition-all duration-200 uppercase tracking-tighter"
                   style={{
                     background: "rgba(110,20,212,0.12)",
                     color: "#6E14D4",
                     border: "1px solid rgba(110,20,212,0.25)",
+                    fontSize: "10px",
+                    fontWeight: 800,
                   }}
                   onMouseEnter={(e) => {
                     (e.currentTarget as HTMLButtonElement).style.background =
@@ -122,50 +150,58 @@ export default function CTASection() {
                       "rgba(110,20,212,0.12)";
                   }}
                 >
-                  Reveal
+                  {isRevealing ? "Hide" : "Reveal"}
                 </button>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                  className="px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-200"
-                  style={{
-                    background: "#6E14D4",
-                    color: "#fff",
-                    boxShadow: "0 0 20px rgba(110,20,212,0.4)",
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.boxShadow =
-                      "0 0 36px rgba(110,20,212,0.7)";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.boxShadow =
-                      "0 0 20px rgba(110,20,212,0.4)";
-                  }}
-                >
-                  Create Free Account →
-                </button>
-                <button
-                  className="px-6 py-3 rounded-lg font-semibold text-sm border transition-all duration-200"
-                  style={{
-                    borderColor: "rgba(255,255,255,0.12)",
-                    color: "rgba(255,255,255,0.7)",
-                    background: "transparent",
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.borderColor =
-                      "rgba(110,20,212,0.5)";
-                    (e.currentTarget as HTMLButtonElement).style.color = "#fff";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.borderColor =
-                      "rgba(255,255,255,0.12)";
-                    (e.currentTarget as HTMLButtonElement).style.color =
-                      "rgba(255,255,255,0.7)";
-                  }}
-                >
-                  Read MCP Docs
-                </button>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <MagneticWrapper strength={20}>
+                  <button
+                    className="px-6 py-3 rounded-lg font-bold text-sm transition-all duration-300 w-full sm:w-auto"
+                    style={{
+                      background: "#6E14D4",
+                      color: "#fff",
+                      boxShadow: "0 0 20px rgba(110,20,212,0.3)",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.boxShadow =
+                        "0 0 40px rgba(110,20,212,0.6)";
+                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.boxShadow =
+                        "0 0 20px rgba(110,20,212,0.3)";
+                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
+                    }}
+                  >
+                    Create Free Account →
+                  </button>
+                </MagneticWrapper>
+                <MagneticWrapper strength={15}>
+                  <button
+                    className="px-6 py-3 rounded-lg font-bold text-sm border transition-all duration-300 w-full sm:w-auto"
+                    style={{
+                      borderColor: "rgba(255,255,255,0.15)",
+                      color: "rgba(255,255,255,0.8)",
+                      background: "rgba(255,255,255,0.03)",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.borderColor =
+                        "rgba(110,20,212,0.6)";
+                      (e.currentTarget as HTMLButtonElement).style.color = "#fff";
+                      (e.currentTarget as HTMLButtonElement).style.background = "rgba(110,20,212,0.08)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.borderColor =
+                        "rgba(255,255,255,0.15)";
+                      (e.currentTarget as HTMLButtonElement).style.color =
+                        "rgba(255,255,255,0.8)";
+                      (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.03)";
+                    }}
+                  >
+                    Read MCP Docs
+                  </button>
+                </MagneticWrapper>
               </div>
             </div>
 

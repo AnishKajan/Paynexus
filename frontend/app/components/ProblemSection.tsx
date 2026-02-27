@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import GlitchText from "./GlitchText";
 
 interface ProblemCard {
   icon: string;
@@ -81,49 +82,44 @@ export default function ProblemSection() {
         >
           The Problem
         </span>
-        <h2
-          className="text-4xl md:text-5xl font-black tracking-tight"
-          style={{ letterSpacing: "-0.02em" }}
-        >
-          The payment stack{" "}
-          <span style={{ color: "#6E14D4" }}>wasn't built</span>
-          <br />
-          for the AI era.
-        </h2>
-        <p
-          className="mt-4 text-base max-w-xl mx-auto"
-          style={{ color: "rgba(255,255,255,0.45)" }}
-        >
-          Three fundamental gaps in every existing payment processor.
-        </p>
+        <div className="text-center mb-24">
+          <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-[1.1]">
+            <GlitchText text="The problem with" />
+            <br />
+            <span className="text-red-500">
+              <GlitchText text="legacy payments." />
+            </span>
+          </h2>
+          <p className="mt-6 text-lg text-white/40 max-w-xl mx-auto font-medium">
+            Fragmented stacks, opaque fees, and slow settlements are killing your agent's velocity.
+          </p>
+        </div>
       </div>
 
       {/* Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
         {PROBLEMS.map((card) => (
           <div key={card.title} className="relative">
-            {/* Ghost dashed outline — visible before animation */}
-            {!visible && (
-              <div
-                className="absolute inset-0 rounded-xl"
-                style={{
-                  border: "1px dashed rgba(110,20,212,0.2)",
-                  pointerEvents: "none",
-                }}
-              />
-            )}
+            {/* Ghost dashed outline — always exists as a target */}
+            <div
+              className="absolute inset-0 rounded-xl"
+              style={{
+                border: "1px dashed rgba(30, 58, 138, 0.4)", // blue-900ish ghost
+                pointerEvents: "none",
+                background: "rgba(30, 58, 138, 0.02)",
+              }}
+            />
 
             {/* Actual card */}
             <div
               className="rounded-xl p-6 h-full flex flex-col gap-4 relative"
               style={{
-                background: visible ? "#0D0D0D" : "transparent",
-                border: visible
-                  ? "1px solid rgba(110,20,212,0.2)"
-                  : "1px solid transparent",
+                background: "#0D0D0D",
+                border: "1px solid rgba(110,20,212,0.2)",
                 opacity: visible ? 1 : 0,
                 transform: visible ? "translateX(0) translateY(0)" : getInitialTransform(card.direction),
-                transition: "opacity 300ms ease-out, transform 300ms ease-out, background 300ms ease-out, border-color 300ms ease-out",
+                transition: "opacity 300ms ease-out, transform 300ms ease-out",
+                boxShadow: visible ? "0 4px 24px -1px rgba(0, 0, 0, 0.5)" : "none",
               }}
             >
               <div

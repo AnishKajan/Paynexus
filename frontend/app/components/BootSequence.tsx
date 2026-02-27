@@ -3,22 +3,16 @@
 import { useEffect, useRef, useState } from "react";
 
 const BOOT_LINES = [
-  { text: "Initializing Paynexus...", delay: 0 },
-  { text: "Loading compliance engine... OK", delay: 180 },
-  { text: "Connecting IBM watsonx... OK", delay: 360 },
-  { text: "GNN model loaded (GraphSAGE v1)... OK", delay: 540 },
-  { text: "Payment engine online.", delay: 720 },
-  { text: "All systems operational.", delay: 900 },
+  { text: "> Initializing MerchantOS...", delay: 0 },
+  { text: "> Loading compliance engine... OK", delay: 0 },
+  { text: "> Connecting IBM watsonx... OK", delay: 0 },
+  { text: "> GNN model loaded (GraphSAGE v1)... OK", delay: 0 },
+  { text: "> All systems operational.", delay: 0 },
 ];
 
 const CHAR_SPEED = 30;
 
-type Phase =
-  | "cursor"
-  | "scanline"
-  | "typing"
-  | "fadeout"
-  | "done";
+type Phase = "cursor" | "scanline" | "typing" | "fadeout" | "done";
 
 interface BootSequenceProps {
   onComplete: () => void;
@@ -29,51 +23,40 @@ export default function BootSequence({ onComplete }: BootSequenceProps) {
   const [visibleLines, setVisibleLines] = useState<string[]>([]);
   const [currentLineText, setCurrentLineText] = useState("");
   const [currentLineIndex, setCurrentLineIndex] = useState(0);
-  const [scanlineWidth, setScanlineWidth] = useState(0);
-  const rafRef = useRef<number | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const startTimeRef = useRef<number>(0);
 
   useEffect(() => {
-    // Phase: cursor blinks for 400ms
+    // 0-400ms: Pure black with cursor blink (dealt with in JSX)
     timeoutRef.current = setTimeout(() => {
       setPhase("scanline");
     }, 400);
+
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, []);
 
-  // Scanline expansion phase
+  // 400-900ms: Scanline expansion phase
   useEffect(() => {
     if (phase !== "scanline") return;
 
-    const duration = 500;
-    startTimeRef.current = performance.now();
+    timeoutRef.current = setTimeout(() => {
+      setPhase("typing");
+    }, 500);
 
-    const animate = (now: number) => {
-      const elapsed = now - startTimeRef.current;
-      const progress = Math.min(elapsed / duration, 1);
-      setScanlineWidth(progress * 100);
-      if (progress < 1) {
-        rafRef.current = requestAnimationFrame(animate);
-      } else {
-        setPhase("typing");
-      }
-    };
-
-    rafRef.current = requestAnimationFrame(animate);
     return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, [phase]);
 
-  // Typing phase
+  // 900-1400ms: Typing phase (now part of the 1200ms sequence)
   useEffect(() => {
     if (phase !== "typing") return;
+
     if (currentLineIndex >= BOOT_LINES.length) {
-      // All lines typed — wait then fadeout
-      timeoutRef.current = setTimeout(() => setPhase("fadeout"), 400);
+      // 1.2s total boot text sequence ends around 900 + 1200 = 2100ms
+      // We'll transition to fadeout after a short pause
+      timeoutRef.current = setTimeout(() => setPhase("fadeout"), 200);
       return;
     }
 
@@ -83,33 +66,37 @@ export default function BootSequence({ onComplete }: BootSequenceProps) {
 
     const typeChar = () => {
       charIdx++;
-      setCurrentLineText(line.text.slice(0, charIdx));
+      const nextChar = line.text.slice(0, charIdx);
+      setCurrentLineText(nextChar);
+
       if (charIdx < line.text.length) {
         timeoutRef.current = setTimeout(typeChar, CHAR_SPEED);
       } else {
-        // Line complete — move to next
+        // Line complete
         timeoutRef.current = setTimeout(() => {
           setVisibleLines((prev) => [...prev, line.text]);
           setCurrentLineText("");
           setCurrentLineIndex((i) => i + 1);
-        }, 80);
+        }, 50);
       }
     };
 
-    timeoutRef.current = setTimeout(typeChar, line.delay > 0 ? 60 : 0);
+    typeChar();
 
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, [phase, currentLineIndex]);
 
-  // Fadeout → done
+  // 1400-2000ms: Fadeout upward (started around 2.1s based on text lengths)
   useEffect(() => {
     if (phase !== "fadeout") return;
+    
     timeoutRef.current = setTimeout(() => {
       setPhase("done");
       onComplete();
-    }, 700);
+    }, 600);
+    
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
@@ -117,88 +104,68 @@ export default function BootSequence({ onComplete }: BootSequenceProps) {
 
   if (phase === "done") return null;
 
-  const isTyping = phase === "typing";
-  const isFadeout = phase === "fadeout";
-
   return (
     <div
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black"
+      className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black overflow-hidden"
       style={{
-        transition: isFadeout ? "opacity 600ms ease-out" : undefined,
-        opacity: isFadeout ? 0 : 1,
+        pointerEvents: "all",
       }}
-      aria-hidden="true"
     >
-      {/* Blinking cursor — only in cursor phase */}
+      <style>{`
+        @keyframes cursorBlink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0; }
+        }
+        @keyframes scanlineExpand {
+          from { transform: scaleX(0); opacity: 1; }
+          to { transform: scaleX(1); opacity: 0; }
+        }
+      `}</style>
+
+      {/* 0-400ms: Pulse cursor */}
       {phase === "cursor" && (
         <div
           style={{
             width: 2,
             height: 20,
             background: "#fff",
-            boxShadow: "0 0 8px rgba(255,255,255,0.8)",
             animation: "cursorBlink 500ms step-end infinite",
           }}
         />
       )}
 
-      {/* Scanline */}
+      {/* 400-900ms: Scanline */}
       {phase === "scanline" && (
         <div
+          className="absolute left-0 right-0 h-[1px] bg-white"
           style={{
-            position: "absolute",
             top: "50%",
-            left: 0,
-            height: 1,
-            width: `${scanlineWidth}%`,
-            background: "#fff",
             boxShadow: "0 0 8px rgba(255,255,255,0.8)",
-            transform: "translateY(-50%)",
-            transition: "none",
+            animation: "scanlineExpand 500ms ease-out forwards",
+            transformOrigin: "center",
           }}
         />
       )}
 
-      {/* Terminal output */}
-      {(isTyping || isFadeout) && (
+      {/* Terminal Text */}
+      {(phase === "typing" || phase === "fadeout") && (
         <div
-          className="font-mono text-sm"
+          className="font-mono text-[14px] text-[#22C55E]"
           style={{
-            minWidth: 420,
-            maxWidth: 520,
-            padding: "0 16px",
-            transition: isFadeout ? "opacity 600ms ease-out, transform 600ms ease-out" : undefined,
-            opacity: isFadeout ? 0 : 1,
-            transform: isFadeout ? "translateY(-30px)" : "translateY(0)",
+            transition: "all 600ms ease-out",
+            opacity: phase === "fadeout" ? 0 : 1,
+            transform: phase === "fadeout" ? "translateY(-20px)" : "translateY(0)",
           }}
         >
           {visibleLines.map((line, i) => (
-            <div
-              key={i}
-              style={{
-                color: line.includes("OK") || line.includes("online") || line.includes("operational")
-                  ? "#22C55E"
-                  : "#e5e7eb",
-                lineHeight: "1.7",
-                fontSize: 13,
-              }}
-            >
-              {line}
-            </div>
+            <div key={i} className="mb-1">{line}</div>
           ))}
           {currentLineText && (
-            <div style={{ color: "#e5e7eb", lineHeight: "1.7", fontSize: 13 }}>
+            <div className="relative">
               {currentLineText}
               <span
-                style={{
-                  display: "inline-block",
-                  width: 2,
-                  height: 13,
-                  background: "#fff",
-                  marginLeft: 2,
-                  verticalAlign: "middle",
-                  animation: "cursorBlink 500ms step-end infinite",
-                }}
+                className="inline-block w-[2px] h-[14px] bg-white ml-1 animate-pulse"
+                style={{ verticalAlign: "middle" }}
               />
             </div>
           )}

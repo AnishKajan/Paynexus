@@ -21,47 +21,36 @@ function ScrambleWord({ word, delay, visible }: ScrambleWordProps) {
   const [displayText, setDisplayText] = useState("");
   const [settled, setSettled] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const rafRef = useRef<number | null>(null);
-  const startRef = useRef<number>(0);
 
   useEffect(() => {
     if (!visible) return;
 
-    const scrambleDuration = 200;
-    const totalDuration = scrambleDuration;
-
+    // Wait for the word's staggered entrance
     timerRef.current = setTimeout(() => {
-      startRef.current = performance.now();
+      let cycleCount = 0;
+      const totalCycles = 5; // 5 cycles * 40ms = 200ms total
 
-      const animate = (now: number) => {
-        const elapsed = now - startRef.current;
-        const progress = Math.min(elapsed / totalDuration, 1);
-        const settledChars = Math.floor(progress * word.length);
-
-        let result = "";
-        for (let i = 0; i < word.length; i++) {
-          if (i < settledChars) {
-            result += word[i];
-          } else {
-            result += getRandomChar();
+      const cycle = () => {
+        if (cycleCount < totalCycles) {
+          // Rapidly cycle through random characters for each position
+          let scrambled = "";
+          for (let i = 0; i < word.length; i++) {
+            scrambled += getRandomChar();
           }
-        }
-        setDisplayText(result);
-
-        if (progress < 1) {
-          rafRef.current = requestAnimationFrame(animate);
+          setDisplayText(scrambled);
+          cycleCount++;
+          timerRef.current = setTimeout(cycle, 40);
         } else {
           setDisplayText(word);
           setSettled(true);
         }
       };
 
-      rafRef.current = requestAnimationFrame(animate);
+      cycle();
     }, delay);
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, [visible, word, delay]);
 
@@ -69,15 +58,14 @@ function ScrambleWord({ word, delay, visible }: ScrambleWordProps) {
     <span
       className="inline-block"
       style={{
-        opacity: visible ? (settled || displayText ? 1 : 0) : 0,
+        opacity: visible && displayText ? 1 : 0,
         transform: visible && displayText ? "translateY(0)" : "translateY(40px)",
         transition: "transform 400ms ease-out, opacity 200ms ease-out",
-        color: settled ? "#ffffff" : "rgba(255,255,255,0.9)",
-        fontFamily: "'JetBrains Mono', monospace",
-        marginRight: "0.25em",
+        fontFamily: "inherit",
+        marginRight: "12px",
       }}
     >
-      {displayText || "\u00A0"}
+      {displayText || word}
     </span>
   );
 }
@@ -94,11 +82,11 @@ export default function HeroSection({ visible }: HeroSectionProps) {
   useEffect(() => {
     if (!visible) return;
 
-    // Start subline after headline words settle
-    const headlineSettleTime = HEADLINE_WORDS.length * 150 + 400;
+    // Start subline after headline words start appearing
+    const headlineStartTime = HEADLINE_WORDS.length * 150 + 200;
     timerRef.current = setTimeout(() => {
       setSublineStarted(true);
-    }, headlineSettleTime);
+    }, headlineStartTime);
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
@@ -119,7 +107,8 @@ export default function HeroSection({ visible }: HeroSectionProps) {
   }, [sublineStarted, sublineIndex]);
 
   const sublineText = SUBHEADLINE.slice(0, sublineIndex);
-  const showSublineCursor = sublineStarted && sublineIndex < SUBHEADLINE.length;
+  const isTyping = sublineStarted && sublineIndex < SUBHEADLINE.length;
+  const isFinished = sublineIndex >= SUBHEADLINE.length;
 
   return (
     <section
@@ -187,7 +176,7 @@ export default function HeroSection({ visible }: HeroSectionProps) {
         }}
       >
         {sublineText}
-        {showSublineCursor && (
+        {isTyping && (
           <span
             style={{
               display: "inline-block",
