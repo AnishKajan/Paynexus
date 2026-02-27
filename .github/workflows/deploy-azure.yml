@@ -1,0 +1,183 @@
+# ============================================================
+#  Paynexus — Deploy to Azure Container Apps via Bicep
+#
+#  Triggers:
+#    - Automatically after build-and-push-backend completes on main
+#    - Manually via workflow_dispatch (to redeploy any time)
+#
+#  Actions:
+#    1. Azure OIDC login (no stored credentials)
+#    2. az deployment group create (Bicep — idempotent)
+#    3. az containerapp update  (force latest image pull)
+#    4. Health check gate
+#
+#  Required GitHub Secrets (Settings → Secrets → Actions):
+#    AZURE_CLIENT_ID        — App registration client ID
+#    AZURE_TENANT_ID        — Azure AD tenant ID
+#    AZURE_SUBSCRIPTION_ID  — Target subscription ID
+#    SUPABASE_URL           — https://<ref>.supabase.co
+#    SUPABASE_ANON_KEY      — Supabase anon (public) key
+#    SUPABASE_JWT_SECRET    — Supabase JWT secret
+#    SUPABASE_JWKS_URL      — https://<ref>.supabase.co/auth/v1/keys
+#
+#  Azure OIDC setup (one-time):
+#    az ad app create --display-name paynexus-github-oidc
+#    az ad sp create --id <appId>
+#    az role assignment create --role Contributor \
+#      --assignee <spObjectId> --scope /subscriptions/<subId>/resourceGroups/Paynexus
+#    # Add federated credential for repo AnishKajan/Paynexus, branch main
+# ============================================================
+
+name: Deploy to Azure
+
+on:
+  workflow_run:
+    workflows: ["Build & Push Backend"]
+    types:
+      - completed
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Container image tag to deploy (default: latest)"
+        required: false
+        default: "latest"
+      environment:
+        description: "Target environment"
+        required: false
+        default: "prod"
+        type: choice
+        options:
+          - prod
+          - dev
+
+permissions:
+  contents: read
+  id-token: write   # OIDC token for Azure login
+  packages: read    # read GHCR image digest
+
+env:
+  RESOURCE_GROUP: Paynexus
+  AZURE_LOCATION: eastus2
+  IMAGE_OWNER: anishkajan
+  BACKEND_APP_NAME: paynexus-api
+  MCP_APP_NAME: paynexus-mcp
+
+jobs:
+  deploy:
+    name: Deploy to Azure
+    runs-on: ubuntu-latest
+    # Only run if build succeeded (or if manually triggered)
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+
+    environment: ${{ github.event.inputs.environment || 'prod' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Azure OIDC Login ──────────────────────────────────────────────────────
+      - name: Azure Login (OIDC — no stored credentials)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # ── Resolve image tag ─────────────────────────────────────────────────────
+      - name: Resolve image tag
+        id: tag
+        run: |
+          TAG="${{ github.event.inputs.image_tag || 'latest' }}"
+          ENV_TAG="${{ github.event.inputs.environment || 'prod' }}"
+          echo "image_tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "env_tag=${ENV_TAG}" >> $GITHUB_OUTPUT
+          echo "Deploying image tag: ${TAG} to environment: ${ENV_TAG}"
+
+      # ── Ensure resource group exists ──────────────────────────────────────────
+      - name: Ensure resource group
+        run: |
+          az group create \
+            --name ${{ env.RESOURCE_GROUP }} \
+            --location ${{ env.AZURE_LOCATION }} \
+            --output none
+          echo "Resource group '${{ env.RESOURCE_GROUP }}' ready."
+
+      # ── Deploy Bicep (idempotent) ─────────────────────────────────────────────
+      - name: Deploy Bicep template
+        id: bicep
+        run: |
+          az deployment group create \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --template-file infra/main.bicep \
+            --parameters \
+                location="${{ env.AZURE_LOCATION }}" \
+                environmentTag="${{ steps.tag.outputs.env_tag }}" \
+                ghcrUsername="${{ env.IMAGE_OWNER }}" \
+                ghcrToken="${{ secrets.GITHUB_TOKEN }}" \
+                imageTag="${{ steps.tag.outputs.image_tag }}" \
+                supabaseUrl="${{ secrets.SUPABASE_URL }}" \
+                supabaseAnonKey="${{ secrets.SUPABASE_ANON_KEY }}" \
+                supabaseJwtSecret="${{ secrets.SUPABASE_JWT_SECRET }}" \
+                supabaseJwksUrl="${{ secrets.SUPABASE_JWKS_URL }}" \
+                paynexusEnv="${{ steps.tag.outputs.env_tag == 'prod' && 'production' || 'sandbox' }}" \
+            --output json | tee /tmp/deployment-output.json
+
+      # ── Force latest image pull on Container App ──────────────────────────────
+      - name: Force image update (backend)
+        run: |
+          az containerapp update \
+            --name ${{ env.BACKEND_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --image ghcr.io/${{ env.IMAGE_OWNER }}/paynexus-backend:${{ steps.tag.outputs.image_tag }} \
+            --output none
+          echo "Backend Container App updated to tag: ${{ steps.tag.outputs.image_tag }}"
+
+      # ── Print deployment outputs ──────────────────────────────────────────────
+      - name: Print deployment outputs
+        run: |
+          echo "=== Deployment Outputs ==="
+          cat /tmp/deployment-output.json | jq '.properties.outputs // {}'
+          API_URL=$(cat /tmp/deployment-output.json | jq -r '.properties.outputs.apiUrl.value // empty')
+          MCP_URL=$(cat /tmp/deployment-output.json | jq -r '.properties.outputs.mcpUrl.value // empty')
+          echo ""
+          echo "API URL : ${API_URL:-<not in outputs>}"
+          echo "MCP URL : ${MCP_URL:-<not in outputs>}"
+
+          echo "### Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "| | |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| **API URL** | ${API_URL} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **MCP URL** | ${MCP_URL} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Image Tag** | \`${{ steps.tag.outputs.image_tag }}\` |" >> $GITHUB_STEP_SUMMARY
+
+      # ── Health check gate ─────────────────────────────────────────────────────
+      - name: Health check — API
+        run: |
+          API_FQDN=$(cat /tmp/deployment-output.json | \
+            jq -r '.properties.outputs.apiFqdn.value // empty')
+
+          if [ -z "$API_FQDN" ]; then
+            echo "No FQDN in outputs — getting from Container App directly..."
+            API_FQDN=$(az containerapp show \
+              --name ${{ env.BACKEND_APP_NAME }} \
+              --resource-group ${{ env.RESOURCE_GROUP }} \
+              --query "properties.configuration.ingress.fqdn" -o tsv)
+          fi
+
+          echo "Health check: https://${API_FQDN}/api/health"
+          for i in $(seq 1 15); do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+              "https://${API_FQDN}/api/health" 2>/dev/null || echo "000")
+            echo "  Attempt ${i}/15: HTTP ${STATUS}"
+            if [ "$STATUS" = "200" ]; then
+              echo "API is healthy!"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "WARNING: API did not return HTTP 200 within ~2.5 minutes. Check Container App logs."
+          exit 1
