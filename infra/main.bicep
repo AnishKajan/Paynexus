@@ -42,6 +42,9 @@ param supabaseJwtSecret string
 @description('Supabase JWKS URL (https://<ref>.supabase.co/auth/v1/keys).')
 param supabaseJwksUrl string
 
+@description('Runtime environment label injected into the container (sandbox or production).')
+param paynexusEnv string = 'sandbox'
+
 // ── Log Analytics ─────────────────────────────────────────────────────────────
 module logAnalytics 'loganalytics.bicep' = {
   name: 'logAnalyticsDeploy'
@@ -66,6 +69,7 @@ module containerApps 'containerapps.bicep' = {
     supabaseAnonKey: supabaseAnonKey
     supabaseJwtSecret: supabaseJwtSecret
     supabaseJwksUrl: supabaseJwksUrl
+    paynexusEnv: paynexusEnv
   }
 }
 

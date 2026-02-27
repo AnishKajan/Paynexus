@@ -1,0 +1,85 @@
+# ============================================================
+#  Paynexus — Build & Push Backend Image
+#  Trigger : push to main (path-filtered to backend/**)
+#            or workflow_dispatch
+#
+#  Builds the Rust/Axum backend image and pushes to:
+#    ghcr.io/anishkajan/paynexus-backend:<sha>
+#    ghcr.io/anishkajan/paynexus-backend:latest
+#
+#  Note: The MCP image is built in the separate Paynexus-MCP
+#  repository's own CI workflow.
+# ============================================================
+
+name: Build & Push Backend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "backend/**"
+      - ".github/workflows/build-and-push-backend.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write   # push to GHCR
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ghcr.io/anishkajan/paynexus-backend
+
+jobs:
+  build-and-push:
+    name: Build & Push Backend Image
+    runs-on: ubuntu-latest
+
+    outputs:
+      image-tag: ${{ steps.meta.outputs.version }}
+      image-digest: ${{ steps.build.outputs.digest }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=,format=short
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push backend image
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
+
+      - name: Image summary
+        run: |
+          echo "### Backend Image Built" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** \`${{ env.IMAGE_NAME }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Tags:**" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.meta.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Digest:** \`${{ steps.build.outputs.digest }}\`" >> $GITHUB_STEP_SUMMARY

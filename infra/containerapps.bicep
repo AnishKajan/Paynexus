@@ -39,6 +39,9 @@ param supabaseAnonKey string
 param supabaseJwtSecret string
 param supabaseJwksUrl string
 
+// Runtime environment label (sandbox / production)
+param paynexusEnv string = 'sandbox'
+
 // ── Derived names ─────────────────────────────────────────────────────────────
 var envName         = 'cae-paynexus-${environmentTag}'
 var apiAppName      = 'paynexus-api'
@@ -151,6 +154,10 @@ resource paynexusApi 'Microsoft.App/containerApps@2023-05-01' = {
             {
               name: 'RUST_LOG'
               value: 'info'
+            }
+            {
+              name: 'PAYNEXUS_ENV'
+              value: paynexusEnv
             }
             {
               name: 'PORT'
