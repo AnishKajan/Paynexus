@@ -225,27 +225,31 @@ export default function HeroSection({ visible }: HeroSectionProps) {
         >
           Start Building →
         </button>
-        <button
-          className="px-8 py-3 rounded-lg font-semibold text-sm tracking-wide transition-all duration-200 border"
+        <a
+          href="https://paynexus-docs.vercel.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="px-8 py-3 rounded-lg font-semibold text-sm tracking-wide transition-all duration-200 border inline-block"
           style={{
             borderColor: "rgba(255,255,255,0.15)",
             color: "rgba(255,255,255,0.8)",
             background: "transparent",
+            textDecoration: "none",
           }}
           onMouseEnter={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.borderColor =
+            (e.currentTarget as HTMLAnchorElement).style.borderColor =
               "rgba(110,20,212,0.6)";
-            (e.currentTarget as HTMLButtonElement).style.color = "#fff";
+            (e.currentTarget as HTMLAnchorElement).style.color = "#fff";
           }}
           onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.borderColor =
+            (e.currentTarget as HTMLAnchorElement).style.borderColor =
               "rgba(255,255,255,0.15)";
-            (e.currentTarget as HTMLButtonElement).style.color =
+            (e.currentTarget as HTMLAnchorElement).style.color =
               "rgba(255,255,255,0.8)";
           }}
         >
           View Docs
-        </button>
+        </a>
       </div>
 
       {/* Stats strip */}
