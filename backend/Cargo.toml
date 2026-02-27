@@ -19,3 +19,6 @@ tower = "0.4"
 
 # Auth — Supabase JWT verification (HS256)
 jsonwebtoken = "9"
+
+# API key hashing (SHA-256)
+sha2 = "0.10"
