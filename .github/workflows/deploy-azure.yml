@@ -72,8 +72,11 @@ jobs:
     if: >
       github.event_name == 'workflow_dispatch' ||
       github.event.workflow_run.conclusion == 'success'
-
-    environment: ${{ github.event.inputs.environment || 'prod' }}
+    # NOTE: No "environment:" key here — using a GitHub Environment changes the
+    # OIDC subject to "repo:...:environment:<name>" which won't match a branch-
+    # based federated credential ("repo:...:ref:refs/heads/main").
+    # If you later add an Environment in GitHub, add a matching federated
+    # credential in Azure for "repo:AnishKajan/Paynexus:environment:<name>".
 
     steps:
       - name: Checkout repository
