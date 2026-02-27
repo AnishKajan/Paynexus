@@ -79,7 +79,7 @@ export default function Navbar() {
       {/* CTA */}
       <div className="flex items-center gap-3">
         <a
-          href="#"
+          href="/login"
           className="hidden md:block text-sm transition-colors duration-200"
           style={{ color: "rgba(255,255,255,0.5)" }}
           onMouseEnter={(e) => {
@@ -92,24 +92,26 @@ export default function Navbar() {
         >
           Sign in
         </a>
-        <button
-          className="text-sm font-semibold px-4 py-1.5 rounded-lg transition-all duration-200"
+        <a
+          href="/signup"
+          className="text-sm font-semibold px-4 py-1.5 rounded-lg transition-all duration-200 inline-block"
           style={{
             background: "#6E14D4",
             color: "#fff",
             boxShadow: "0 0 12px rgba(110,20,212,0.35)",
+            textDecoration: "none",
           }}
           onMouseEnter={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.boxShadow =
+            (e.currentTarget as HTMLAnchorElement).style.boxShadow =
               "0 0 24px rgba(110,20,212,0.6)";
           }}
           onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.boxShadow =
+            (e.currentTarget as HTMLAnchorElement).style.boxShadow =
               "0 0 12px rgba(110,20,212,0.35)";
           }}
         >
           Get API Key
-        </button>
+        </a>
       </div>
     </header>
   );
