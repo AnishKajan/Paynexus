@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "eastus2"
+    },
+    "environmentTag": {
+      "value": "prod"
+    },
+    "ghcrUsername": {
+      "value": "AnishKajan"
+    },
+    "ghcrToken": {
+      "reference": {
+        "keyVault": null
+      },
+      "value": "__REPLACE_WITH_GHCR_TOKEN__"
+    },
+    "imageTag": {
+      "value": "latest"
+    },
+    "supabaseUrl": {
+      "value": "__REPLACE_WITH_SUPABASE_URL__"
+    },
+    "supabaseAnonKey": {
+      "value": "__REPLACE_WITH_SUPABASE_ANON_KEY__"
+    },
+    "supabaseJwtSecret": {
+      "value": "__REPLACE_WITH_SUPABASE_JWT_SECRET__"
+    },
+    "supabaseJwksUrl": {
+      "value": "__REPLACE_WITH_SUPABASE_JWKS_URL__"
+    }
+  }
+}

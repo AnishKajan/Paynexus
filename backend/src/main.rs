@@ -42,7 +42,8 @@ async fn main() {
         .layer(cors)
         .with_state(state);
 
-    let addr = "0.0.0.0:3001";
+    let port = std::env::var("PORT").unwrap_or_else(|_| "3001".to_string());
+    let addr = format!("0.0.0.0:{}", port);
     println!("╔══════════════════════════════════════════╗");
     println!("║        Paynexus Backend v0.1.0           ║");
     println!("╠══════════════════════════════════════════╣");
@@ -50,10 +51,10 @@ async fn main() {
     println!("║  MorEngine        → online               ║");
     println!("║  ComplianceEngine → online (GraphSAGE)   ║");
     println!("╠══════════════════════════════════════════╣");
-    println!("║  Listening on http://{}          ║", addr);
+    println!("║  Listening on http://{}             ║", addr);
     println!("╚══════════════════════════════════════════╝");
 
-    let listener = tokio::net::TcpListener::bind(addr)
+    let listener = tokio::net::TcpListener::bind(&addr)
         .await
         .expect("Failed to bind to address");
 
