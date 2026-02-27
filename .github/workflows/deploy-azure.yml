@@ -43,8 +43,8 @@ on:
         description: "Container image tag to deploy (default: latest)"
         required: false
         default: "latest"
-      environment:
-        description: "Target environment"
+      deploy_env:
+        description: "Target environment (prod or dev)"
         required: false
         default: "prod"
         type: choice
@@ -95,7 +95,7 @@ jobs:
         id: tag
         run: |
           TAG="${{ github.event.inputs.image_tag || 'latest' }}"
-          ENV_TAG="${{ github.event.inputs.environment || 'prod' }}"
+          ENV_TAG="${{ github.event.inputs.deploy_env || 'prod' }}"
           echo "image_tag=${TAG}" >> $GITHUB_OUTPUT
           echo "env_tag=${ENV_TAG}" >> $GITHUB_OUTPUT
           echo "Deploying image tag: ${TAG} to environment: ${ENV_TAG}"
