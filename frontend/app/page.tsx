@@ -8,6 +8,8 @@ import FeaturesSection from "./components/FeaturesSection";
 import ComplianceRiskDashboard from "./components/ComplianceRiskDashboard";
 import HowItWorks from "./components/HowItWorks";
 import CTASection from "./components/CTASection";
+import CountUp from "./components/CountUp";
+import ScrollProgress from "./components/ScrollProgress";
 import Navbar from "./components/Navbar";
 
 const BOOT_SESSION_KEY = "paynexus_boot_played";
@@ -51,8 +53,26 @@ export default function HomePage() {
           {/* Hero */}
           <HeroSection visible={bootDone} />
 
-          {/* Problem */}
-          <ProblemSection />
+          {/* Stats Bar */}
+          <section className="py-12 border-y border-[rgba(255,255,255,0.06)] bg-[rgba(110,20,212,0.02)]">
+            <div className="max-w-5xl mx-auto px-6 flex flex-wrap justify-between gap-8 text-center">
+              {[
+                { target: 10, suffix: " min", label: "to first payment" },
+                { target: 94, suffix: "%", label: "GNN accuracy" },
+                { target: 5, suffix: "x", label: "faster than Stripe setup" },
+                { target: 3, label: "IBM AI models integrated" },
+              ].map((stat, i) => (
+                <div key={i} className="flex flex-col gap-1">
+                  <span className="text-3xl font-black font-mono text-[#6E14D4]">
+                    <CountUp target={stat.target} suffix={stat.suffix} />
+                  </span>
+                  <span className="text-xs uppercase tracking-widest text-[rgba(255,255,255,0.4)]">
+                    {stat.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
 
           {/* Features bento */}
           <FeaturesSection />

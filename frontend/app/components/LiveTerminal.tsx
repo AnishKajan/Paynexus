@@ -10,28 +10,28 @@ interface TerminalLine {
 }
 
 const SCRIPT: TerminalLine[] = [
-  { type: "command", text: "$ paynexus init --project ai-saas" },
-  { type: "output", text: "✓ Config created" },
+  { type: "command", text: "$ merchantos init --project my-saas-app" },
+  { type: "output", text: "  ✓ Config created" },
   { type: "blank", text: "" },
-  { type: "command", text: "$ paynexus keys create --tag billing" },
-  { type: "output", text: "✓ sk_live_•••••••••••••6f2a" },
+  { type: "command", text: "$ merchantos keys create --tag billing" },
+  { type: "output", text: "  ✓ sk_live_•••••••••••••6f2a" },
   { type: "blank", text: "" },
   { type: "command", text: "$ mcp.createCheckoutSession({" },
   { type: "command", text: "    amount: 4900," },
   { type: "command", text: '    currency: "usd"' },
   { type: "command", text: "  })" },
   { type: "blank", text: "" },
-  { type: "arrow", text: "→ Connecting to Paynexus..." },
-  { type: "arrow", text: "→ Session created: cs_live_Kx9..." },
-  { type: "arrow", text: "→ Checkout URL ready ✓" },
+  { type: "arrow", text: "  → Connecting to MerchantOS..." },
+  { type: "arrow", text: "  → Session created: cs_live_Kx9..." },
+  { type: "arrow", text: "  → Checkout URL ready ✓" },
   { type: "blank", text: "" },
-  { type: "command", text: "$ paynexus compliance --scan" },
-  { type: "output", text: "Running GNN inference..." },
-  { type: "progress", text: "[████████████████] 100%" },
-  { type: "output", text: "AML Risk: 0.08 ✓ LOW" },
-  { type: "output", text: "Fraud Risk: 0.06 ✓ LOW" },
+  { type: "command", text: "$ merchantos compliance --scan" },
+  { type: "output", text: "  Running GNN inference..." },
+  { type: "progress", text: "  [████████████████] 100%" },
+  { type: "output", text: "  AML Risk: 0.08 ✓ LOW" },
+  { type: "output", text: "  Fraud Risk: 0.06 ✓ LOW" },
   { type: "blank", text: "" },
-  { type: "output", text: "All clear. Ready to charge." },
+  { type: "output", text: "  All clear. Ready to charge." },
 ];
 
 const CHAR_SPEED = 18;
@@ -46,7 +46,7 @@ function getLineColor(type: LineType): string {
     case "arrow":
       return "#3B82F6";
     case "progress":
-      return "#6E14D4";
+      return "#ffffff"; // Bar characters usually look better in white or dim white
     case "blank":
       return "transparent";
   }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import GlitchText from "./GlitchText";
 
 interface Feature {
   id: string;
@@ -69,25 +70,36 @@ const FEATURES: Feature[] = [
 
 // Electric arc SVG that sweeps around a card border
 function ElectricArc({ active }: { active: boolean }) {
+  const pathRef = useRef<SVGRectElement>(null);
+  const [length, setLength] = useState(0);
+
+  useEffect(() => {
+    if (pathRef.current) {
+      setLength(pathRef.current.getTotalLength());
+    }
+  }, []);
+
   return (
     <svg
       className="absolute inset-0 w-full h-full pointer-events-none"
       style={{ borderRadius: 16 }}
     >
       <rect
-        x="1"
-        y="1"
-        width="calc(100% - 2)"
-        height="calc(100% - 2)"
+        ref={pathRef}
+        x="0.5"
+        y="0.5"
+        width="calc(100% - 1px)"
+        height="calc(100% - 1px)"
         rx="15"
         fill="none"
         stroke="#6E14D4"
-        strokeWidth="1.5"
-        strokeDasharray="1000"
-        strokeDashoffset={active ? "0" : "1000"}
+        strokeWidth="2"
+        strokeDasharray={`${length / 4} ${length}`}
+        strokeDashoffset={active ? -length : 0}
         style={{
           transition: active ? "stroke-dashoffset 800ms linear" : "none",
-          filter: active ? "drop-shadow(0 0 4px #6E14D4)" : "none",
+          filter: "drop-shadow(0 0 6px #6E14D4)",
+          opacity: active ? 1 : 0,
         }}
       />
     </svg>
@@ -212,6 +224,8 @@ function FeatureCard({ feature, index, visible }: FeatureCardProps) {
   );
 }
 
+import ParticleField from "./ParticleField";
+
 export default function FeaturesSection() {
   const [visible, setVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
@@ -236,26 +250,30 @@ export default function FeaturesSection() {
   const smallFeatures = FEATURES.filter((f) => f.size === "small");
 
   return (
-    <section ref={sectionRef} className="py-32 px-6">
-      <div className="max-w-5xl mx-auto">
+    <section ref={sectionRef} className="py-32 px-6 relative overflow-hidden">
+      <ParticleField />
+      <div className="max-w-5xl mx-auto relative z-10">
         {/* Header */}
         <div className="text-center mb-16">
           <span
-            className="inline-block text-xs font-mono uppercase tracking-widest px-3 py-1 rounded-full border mb-6"
+            className="inline-block text-xs font-mono uppercase tracking-[0.2em] px-3 py-1 rounded-full border mb-8"
             style={{
               borderColor: "rgba(110,20,212,0.3)",
-              color: "rgba(110,20,212,0.9)",
+              color: "rgba(110,20,212,0.8)",
               background: "rgba(110,20,212,0.06)",
             }}
           >
             Features
           </span>
           <h2
-            className="text-4xl md:text-5xl font-black tracking-tight"
+            className="text-4xl md:text-6xl font-black tracking-tight"
             style={{ letterSpacing: "-0.02em" }}
           >
-            Everything an AI agent needs{" "}
-            <span style={{ color: "#6E14D4" }}>to transact.</span>
+            <GlitchText text="Built for the" />
+            <br />
+            <span className="text-blue-500">
+              <GlitchText text="AI agent era." />
+            </span>
           </h2>
         </div>
 

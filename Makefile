@@ -10,6 +10,12 @@ dev: install
 	@echo ""
 	npm run dev
 
+dev-frontend:
+	@echo ""
+	@echo "  [frontend] http://localhost:3000"
+	@echo ""
+	npm run dev:frontend
+
 # ── Individual services (use in separate terminals) ───────────────────────────
 frontend:
 	cd frontend && npm run dev
