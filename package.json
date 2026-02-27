@@ -1,0 +1,11 @@
+{
+  "name": "paynexus-root",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently --names \"backend,frontend\" --prefix-colors \"magenta,cyan\" --kill-others-on-fail \"cd backend && cargo run\" \"cd frontend && npm run dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
