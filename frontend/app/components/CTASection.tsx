@@ -37,7 +37,7 @@ export default function CTASection() {
           observer.disconnect();
         }
       },
-      { threshold: 0.15 }
+      { threshold: 0.15 },
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -120,7 +120,9 @@ export default function CTASection() {
                 style={{
                   background: "#000",
                   border: "1px solid rgba(110,20,212,0.2)",
-                  boxShadow: isRevealing ? "0 0 15px rgba(34, 197, 94, 0.1)" : "none",
+                  boxShadow: isRevealing
+                    ? "0 0 15px rgba(34, 197, 94, 0.1)"
+                    : "none",
                   transition: "box-shadow 300ms ease",
                 }}
               >
@@ -129,7 +131,9 @@ export default function CTASection() {
                 {isRevealing ? (
                   <span style={{ color: "#22C55E" }}>{revealedKey}</span>
                 ) : (
-                  <span style={{ color: "rgba(255,255,255,0.1)" }}>•••••••••••••6f2a</span>
+                  <span style={{ color: "rgba(255,255,255,0.1)" }}>
+                    •••••••••••••6f2a
+                  </span>
                 )}
                 <button
                   onClick={() => setIsRevealing(!isRevealing)}
@@ -166,41 +170,50 @@ export default function CTASection() {
                     onMouseEnter={(e) => {
                       (e.currentTarget as HTMLButtonElement).style.boxShadow =
                         "0 0 40px rgba(110,20,212,0.6)";
-                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
+                      (e.currentTarget as HTMLButtonElement).style.transform =
+                        "translateY(-1px)";
                     }}
                     onMouseLeave={(e) => {
                       (e.currentTarget as HTMLButtonElement).style.boxShadow =
                         "0 0 20px rgba(110,20,212,0.3)";
-                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
+                      (e.currentTarget as HTMLButtonElement).style.transform =
+                        "translateY(0)";
                     }}
                   >
                     Create Free Account →
                   </button>
                 </MagneticWrapper>
                 <MagneticWrapper strength={15}>
-                  <button
-                    className="px-6 py-3 rounded-lg font-bold text-sm border transition-all duration-300 w-full sm:w-auto"
+                  <a
+                    href="https://paynexus-docs.vercel.app/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-6 py-3 rounded-lg font-bold text-sm border transition-all duration-300 w-full sm:w-auto text-center"
                     style={{
                       borderColor: "rgba(255,255,255,0.15)",
                       color: "rgba(255,255,255,0.8)",
                       background: "rgba(255,255,255,0.03)",
+                      textDecoration: "none",
                     }}
                     onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.borderColor =
+                      (e.currentTarget as HTMLAnchorElement).style.borderColor =
                         "rgba(110,20,212,0.6)";
-                      (e.currentTarget as HTMLButtonElement).style.color = "#fff";
-                      (e.currentTarget as HTMLButtonElement).style.background = "rgba(110,20,212,0.08)";
+                      (e.currentTarget as HTMLAnchorElement).style.color =
+                        "#fff";
+                      (e.currentTarget as HTMLAnchorElement).style.background =
+                        "rgba(110,20,212,0.08)";
                     }}
                     onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.borderColor =
+                      (e.currentTarget as HTMLAnchorElement).style.borderColor =
                         "rgba(255,255,255,0.15)";
-                      (e.currentTarget as HTMLButtonElement).style.color =
+                      (e.currentTarget as HTMLAnchorElement).style.color =
                         "rgba(255,255,255,0.8)";
-                      (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.03)";
+                      (e.currentTarget as HTMLAnchorElement).style.background =
+                        "rgba(255,255,255,0.03)";
                     }}
                   >
                     Read MCP Docs
-                  </button>
+                  </a>
                 </MagneticWrapper>
               </div>
             </div>

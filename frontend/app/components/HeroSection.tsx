@@ -3,7 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 
 const SCRAMBLE_CHARS = "!@#$%^&*<>?/|{}[]";
-const HEADLINE_WORDS = ["Payment", "infrastructure", "for", "the", "AI", "era."];
+const HEADLINE_WORDS = [
+  "Payment",
+  "infrastructure",
+  "for",
+  "the",
+  "AI",
+  "era.",
+];
 const SUBHEADLINE =
   "Compliance-first. AI-native. Built for agents, developers, and the next generation of global commerce.";
 
@@ -59,7 +66,8 @@ function ScrambleWord({ word, delay, visible }: ScrambleWordProps) {
       className="inline-block"
       style={{
         opacity: visible && displayText ? 1 : 0,
-        transform: visible && displayText ? "translateY(0)" : "translateY(40px)",
+        transform:
+          visible && displayText ? "translateY(0)" : "translateY(40px)",
         transition: "transform 400ms ease-out, opacity 200ms ease-out",
         fontFamily: "inherit",
         marginRight: "12px",
@@ -279,9 +287,6 @@ export default function HeroSection({ visible }: HeroSectionProps) {
           transition: "opacity 600ms ease-out 2000ms",
         }}
       >
-        <span className="text-xs font-mono tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.4)" }}>
-          Scroll
-        </span>
         <div
           style={{
             width: 1,
