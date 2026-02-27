@@ -1,3 +1,4 @@
+mod auth;
 mod compliance;
 mod handlers;
 mod models;

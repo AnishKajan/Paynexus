@@ -16,3 +16,6 @@ uuid = { version = "1", features = ["v4"] }
 tower-http = { version = "0.5", features = ["cors"] }
 chrono = { version = "0.4", features = ["serde"] }
 tower = "0.4"
+
+# Auth — Supabase JWT verification (HS256)
+jsonwebtoken = "9"
