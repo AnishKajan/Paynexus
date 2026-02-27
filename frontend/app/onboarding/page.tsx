@@ -1,42 +1,43 @@
 import type { Metadata } from "next";
-import AuthForm from "./AuthForm";
+import OnboardingWizard from "./OnboardingWizard";
 
 export const metadata: Metadata = {
-    title: "Sign in — Paynexus",
-    description: "Sign in to the Paynexus Console. Manage payments, compliance, and API keys.",
+    title: "Onboarding — Paynexus",
+    description:
+        "Complete your business verification to start accepting payments with Paynexus.",
 };
 
-export default function LoginPage() {
+export default function OnboardingPage() {
     return (
-        <div className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden">
+        <div className="relative min-h-screen flex items-center justify-center px-4 py-12 overflow-hidden">
             {/* ── Background layers ─────────────────────────────────── */}
             <div
                 className="absolute inset-0 pointer-events-none"
                 style={{
                     backgroundImage:
-                        "linear-gradient(rgba(110,20,212,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(110,20,212,0.06) 1px, transparent 1px)",
-                    backgroundSize: "40px 40px",
+                        "linear-gradient(rgba(110,20,212,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(110,20,212,0.04) 1px, transparent 1px)",
+                    backgroundSize: "48px 48px",
                 }}
             />
             <div
                 className="absolute inset-0 pointer-events-none"
                 style={{
                     background:
-                        "radial-gradient(ellipse 60% 50% at 50% 40%, rgba(110,20,212,0.14) 0%, transparent 70%)",
+                        "radial-gradient(ellipse 70% 50% at 50% 30%, rgba(110,20,212,0.12) 0%, transparent 70%)",
                 }}
             />
 
             {/* ── Card ──────────────────────────────────────────────── */}
             <div
-                className="relative z-10 w-full max-w-[420px] rounded-2xl p-8 md:p-10"
+                className="relative z-10 w-full max-w-2xl rounded-2xl p-8 md:p-10"
                 style={{
                     background: "#0d0d0d",
-                    border: "1px solid rgba(110,20,212,0.2)",
+                    border: "1px solid rgba(110,20,212,0.15)",
                     boxShadow:
-                        "0 0 80px rgba(110,20,212,0.08), 0 24px 64px rgba(0,0,0,0.6)",
+                        "0 0 100px rgba(110,20,212,0.06), 0 32px 80px rgba(0,0,0,0.5)",
                 }}
             >
-                <AuthForm initialMode="login" />
+                <OnboardingWizard />
             </div>
 
             {/* ── Footer strip ──────────────────────────────────────── */}
