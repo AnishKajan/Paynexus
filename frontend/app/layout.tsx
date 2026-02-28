@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import CursorTrail from "./components/CursorTrail";
+import Footer from "./components/Footer";
 
 export const metadata: Metadata = {
   title: "Paynexus — Payment Infrastructure for the AI Era",
@@ -40,9 +41,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="bg-black text-white antialiased">
+      <body className="bg-black text-white antialiased flex flex-col min-h-screen">
         <CursorTrail />
-        {children}
+        <main className="flex-grow">
+          {children}
+        </main>
+        <Footer />
       </body>
     </html>
   );
