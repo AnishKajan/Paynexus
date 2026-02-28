@@ -236,10 +236,18 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
         }
         setError("");
         setGoogleLoading(true);
+
+        // NEXT_PUBLIC_SITE_URL must be set in Vercel env vars to your Vercel URL.
+        // Supabase's "Site URL" in Auth Settings must match this value.
+        // Supabase's "Redirect URLs" must include: <SITE_URL>/auth/callback
+        const siteUrl =
+            process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
+            window.location.origin;
+
         const { error: authError } = await supabase.auth.signInWithOAuth({
             provider: "google",
             options: {
-                redirectTo: `${window.location.origin}/auth/callback`,
+                redirectTo: `${siteUrl}/auth/callback`,
             },
         });
         if (authError) {

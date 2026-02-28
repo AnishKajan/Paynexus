@@ -9,35 +9,58 @@ export default function AuthCallbackPage() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        // Supabase browser client automatically detects the auth tokens
-        // in the URL hash fragment and exchanges them for a session.
-        // We just need to listen for the session to appear.
+        let redirected = false;
+
+        const redirectToDashboard = () => {
+            if (!redirected) {
+                redirected = true;
+                router.replace("/dashboard");
+            }
+        };
+
+        // 1. Listen for auth state changes (covers the implicit/hash flow).
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             (event, session) => {
-                if (event === "SIGNED_IN" && session) {
-                    router.replace("/dashboard");
-                }
-                if (event === "TOKEN_REFRESHED" && session) {
-                    router.replace("/dashboard");
+                if ((event === "SIGNED_IN" || event === "TOKEN_REFRESHED") && session) {
+                    redirectToDashboard();
                 }
             }
         );
 
-        // Fallback: if session already exists (fast redirect), go to dashboard
-        supabase.auth.getSession().then(({ data, error: sessionError }) => {
-            if (sessionError) {
-                setError(sessionError.message);
-                return;
-            }
-            if (data.session) {
-                router.replace("/dashboard");
-            }
-        });
+        // 2. Handle the PKCE flow: Supabase redirects back with ?code=...
+        //    Exchange the code for a session explicitly, then redirect.
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get("code");
 
-        // Timeout fallback: if nothing happens after 10s, show error
+        if (code) {
+            supabase.auth.exchangeCodeForSession(code)
+                .then(({ error: exchangeError }) => {
+                    if (exchangeError) {
+                        setError(exchangeError.message);
+                    } else {
+                        redirectToDashboard();
+                    }
+                });
+        } else {
+            // 3. Fallback: check if there's already a valid session
+            //    (covers fast redirects where auth state fires before listener attaches).
+            supabase.auth.getSession().then(({ data, error: sessionError }) => {
+                if (sessionError) {
+                    setError(sessionError.message);
+                    return;
+                }
+                if (data.session) {
+                    redirectToDashboard();
+                }
+            });
+        }
+
+        // 4. Timeout: if nothing resolves after 12s, surface an error.
         const timeout = setTimeout(() => {
-            setError("Authentication timed out. Please try again.");
-        }, 10000);
+            if (!redirected) {
+                setError("Authentication timed out. Please try again.");
+            }
+        }, 12000);
 
         return () => {
             subscription.unsubscribe();
