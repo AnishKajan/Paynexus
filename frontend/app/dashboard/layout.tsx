@@ -34,12 +34,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 router.replace("/login");
             } else {
                 // Check if user has an organization
-                const { data: orgs } = await supabase
-                    .from("organizations")
-                    .select("id")
+                const userId = data.session.user.id;
+                const { data: members } = await supabase
+                    .from("organization_members")
+                    .select("org_id")
+                    .eq("user_id", userId)
                     .limit(1);
 
-                if (!orgs || orgs.length === 0) {
+                if (!members || members.length === 0) {
                     router.replace("/onboarding");
                     return;
                 }

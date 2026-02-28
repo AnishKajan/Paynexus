@@ -83,12 +83,15 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
         supabase.auth.getSession().then(async ({ data }) => {
             if (data.session) {
                 // If logged in, check if user has an organization
-                const { data: orgs } = await supabase
-                    .from("organizations")
-                    .select("id")
+                // Querying the members table specifically by user_id to avoid RLS caching/timing issues on new accounts
+                const userId = data.session.user.id;
+                const { data: members } = await supabase
+                    .from("organization_members")
+                    .select("org_id")
+                    .eq("user_id", userId)
                     .limit(1);
 
-                if (!orgs || orgs.length === 0) {
+                if (!members || members.length === 0) {
                     router.replace("/onboarding");
                 } else {
                     router.replace("/dashboard");
