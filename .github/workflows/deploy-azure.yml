@@ -179,6 +179,9 @@ jobs:
 
           if [ -z "$EXISTS" ]; then
             echo "Container App not found — creating..."
+            # Pass env vars directly (no --secrets/secretref) so empty values
+            # don't cause ContainerAppSecretInvalid. Backend uses in-memory
+            # state and will start without Supabase configured.
             az containerapp create \
               --name "${{ env.APP_NAME }}" \
               --resource-group "${{ env.RESOURCE_GROUP }}" \
@@ -196,15 +199,10 @@ jobs:
               --env-vars \
                 "PORT=8080" \
                 "PAYNEXUS_ENV=sandbox" \
-                "SUPABASE_URL=secretref:supabase-url" \
-                "SUPABASE_ANON_KEY=secretref:supabase-anon-key" \
-                "SUPABASE_JWT_SECRET=secretref:supabase-jwt-secret" \
-                "SUPABASE_JWKS_URL=secretref:supabase-jwks-url" \
-              --secrets \
-                "supabase-url=${SUPABASE_URL}" \
-                "supabase-anon-key=${SUPABASE_ANON_KEY}" \
-                "supabase-jwt-secret=${SUPABASE_JWT_SECRET}" \
-                "supabase-jwks-url=${SUPABASE_JWKS_URL}" \
+                "SUPABASE_URL=${SUPABASE_URL}" \
+                "SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}" \
+                "SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}" \
+                "SUPABASE_JWKS_URL=${SUPABASE_JWKS_URL}" \
               --output none
             echo "Container App created."
           else
@@ -224,7 +222,7 @@ jobs:
 
           echo "fqdn=${FQDN}" >> "$GITHUB_OUTPUT"
           echo ""
-          echo "✓ API URL: https://${FQDN}"
+          echo "API URL: https://${FQDN}"
 
       # ── 8. Job summary ─────────────────────────────────────────────────────────
       - name: Write job summary
