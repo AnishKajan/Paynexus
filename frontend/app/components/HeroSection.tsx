@@ -207,24 +207,26 @@ export default function HeroSection({ visible }: HeroSectionProps) {
           transition: "opacity 600ms ease-out 1000ms",
         }}
       >
-        <button
-          className="px-8 py-3 rounded-lg font-semibold text-sm tracking-wide transition-all duration-200"
+        <a
+          href="/signup"
+          className="px-8 py-3 rounded-lg font-semibold text-sm tracking-wide transition-all duration-200 inline-block"
           style={{
             background: "#6E14D4",
             color: "#fff",
             boxShadow: "0 0 20px rgba(110,20,212,0.4)",
+            textDecoration: "none",
           }}
           onMouseEnter={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.boxShadow =
+            (e.currentTarget as HTMLAnchorElement).style.boxShadow =
               "0 0 32px rgba(110,20,212,0.7), 0 0 60px rgba(110,20,212,0.3)";
           }}
           onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.boxShadow =
+            (e.currentTarget as HTMLAnchorElement).style.boxShadow =
               "0 0 20px rgba(110,20,212,0.4)";
           }}
         >
           Start Building →
-        </button>
+        </a>
         <a
           href="https://paynexus-docs.vercel.app/"
           target="_blank"
