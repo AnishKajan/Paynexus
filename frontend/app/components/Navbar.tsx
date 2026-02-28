@@ -140,9 +140,9 @@ export default function Navbar() {
           <div className="flex items-center gap-2.5 flex-shrink-0 ml-auto">
             <HulyButton
               href="/login"
-              className="hidden md:flex text-sm px-3 py-1.5 rounded-full border-none"
+              className="hidden md:flex text-sm font-semibold px-4 py-2 rounded-full border-none"
               style={{
-                color: "rgba(255,255,255,0.5)",
+                color: "rgba(255,255,255,0.7)",
                 background: "transparent"
               }}
             >
