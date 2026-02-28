@@ -189,7 +189,7 @@ function SettingsModal({ email, onClose }: { email: string | null; onClose: () =
                                         className="w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold shrink-0"
                                         style={{ background: "rgba(110,20,212,0.2)", color: "#a855f7", border: "2px solid rgba(110,20,212,0.35)", boxShadow: "0 0 20px rgba(110,20,212,0.15)" }}
                                     >
-                                        {(email ?? "U")[0].toUpperCase()}
+                                        {(email?.[0] || "U").toUpperCase()}
                                     </div>
                                     <div>
                                         <button
@@ -385,7 +385,7 @@ export default function UserProfileMenu({ email, onSignOut }: UserProfileMenuPro
         setTimeout(() => setSettingsOpen(true), 100); // slight delay for clean transition
     }, []);
 
-    const initial = (email ?? "U")[0].toUpperCase();
+    const initial = (email?.[0] || "U").toUpperCase();
     const displayName = email ? email.split("@")[0] : "User";
 
     return (

@@ -110,7 +110,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     <div className="flex items-center gap-3 px-2 mb-4">
                         <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
                             style={{ background: "rgba(110,20,212,0.2)", color: "#a855f7", border: "1px solid rgba(110,20,212,0.3)" }}>
-                            {(userEmail ?? "U")[0].toUpperCase()}
+                            {(userEmail?.[0] || "U").toUpperCase()}
                         </div>
                         <div className="flex-1 min-w-0">
                             <p className="text-xs font-medium text-white/70 truncate">{userEmail}</p>
