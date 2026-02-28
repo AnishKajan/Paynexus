@@ -11,10 +11,21 @@ export default function AuthCallbackPage() {
     useEffect(() => {
         let redirected = false;
 
-        const redirectToDashboard = () => {
+        const redirectToDashboard = async () => {
             if (!redirected) {
                 redirected = true;
-                router.replace("/dashboard");
+
+                // Check if user has an organization
+                const { data: orgs } = await supabase
+                    .from("organizations")
+                    .select("id")
+                    .limit(1);
+
+                if (!orgs || orgs.length === 0) {
+                    router.replace("/onboarding");
+                } else {
+                    router.replace("/dashboard");
+                }
             }
         };
 
