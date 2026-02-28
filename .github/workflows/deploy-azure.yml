@@ -16,8 +16,13 @@
 #
 #  Required GitHub Secrets:
 #    AZURE_CLIENT_ID        AZURE_TENANT_ID        AZURE_SUBSCRIPTION_ID
-#    SUPABASE_URL           SUPABASE_ANON_KEY
-#    SUPABASE_JWT_SECRET    SUPABASE_JWKS_URL
+#    SUPABASE_JWT_SECRET    (only Supabase secret the Rust backend uses — HS256)
+#
+#  NOTE: GHCR package must be public (Package Settings → Change visibility).
+#        No registry credentials needed — public images pull without auth.
+#
+#  NOTE: Backend uses jsonwebtoken HS256 with SUPABASE_JWT_SECRET only.
+#        SUPABASE_ANON_KEY and SUPABASE_JWKS_URL are NOT used by the backend.
 #
 #  OIDC federated credential must match subject:
 #    repo:AnishKajan/Paynexus:ref:refs/heads/main
@@ -164,14 +169,13 @@ jobs:
           fi
 
       # ── 7. Create or update paynexus-api ──────────────────────────────────────
+      # NOTE: No registry credentials — GHCR package must be set to Public.
+      #       GITHUB_TOKEN expires after each run; public packages need no auth.
+      #       Backend uses HS256 JWT (jsonwebtoken crate) — only SUPABASE_JWT_SECRET needed.
       - name: Deploy paynexus-api
         id: deploy
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           SUPABASE_JWT_SECRET: ${{ secrets.SUPABASE_JWT_SECRET }}
-          SUPABASE_JWKS_URL: ${{ secrets.SUPABASE_JWKS_URL }}
-          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           IMAGE="${{ steps.tag.outputs.image }}"
 
@@ -182,17 +186,11 @@ jobs:
 
           if [ -z "$EXISTS" ]; then
             echo "Container App not found — creating..."
-            # Pass env vars directly (no --secrets/secretref) so empty values
-            # don't cause ContainerAppSecretInvalid. Backend uses in-memory
-            # state and will start without Supabase configured.
             az containerapp create \
               --name "${{ env.APP_NAME }}" \
               --resource-group "${{ env.RESOURCE_GROUP }}" \
               --environment "${{ env.CAE_NAME }}" \
               --image "${IMAGE}" \
-              --registry-server "ghcr.io" \
-              --registry-username "${{ steps.tag.outputs.owner }}" \
-              --registry-password "${GHCR_TOKEN}" \
               --target-port 8080 \
               --ingress external \
               --min-replicas 0 \
@@ -202,19 +200,28 @@ jobs:
               --env-vars \
                 "PORT=8080" \
                 "PAYNEXUS_ENV=sandbox" \
-                "SUPABASE_URL=${SUPABASE_URL}" \
-                "SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}" \
                 "SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}" \
-                "SUPABASE_JWKS_URL=${SUPABASE_JWKS_URL}" \
               --output none
             echo "Container App created."
           else
-            echo "Container App exists — updating image..."
+            echo "Container App exists — updating image and fixing env vars..."
             az containerapp update \
               --name "${{ env.APP_NAME }}" \
               --resource-group "${{ env.RESOURCE_GROUP }}" \
               --image "${IMAGE}" \
+              --set-env-vars \
+                "PORT=8080" \
+                "PAYNEXUS_ENV=sandbox" \
+                "SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}" \
               --output none
+
+            # Remove stale registry credentials (GITHUB_TOKEN expires each run)
+            az containerapp registry remove \
+              --name "${{ env.APP_NAME }}" \
+              --resource-group "${{ env.RESOURCE_GROUP }}" \
+              --server "ghcr.io" \
+              --output none 2>/dev/null || echo "No registry credential to remove."
+
             echo "Container App updated."
           fi
 
