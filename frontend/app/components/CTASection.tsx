@@ -198,7 +198,7 @@ export default function CTASection() {
                       (e.currentTarget as HTMLAnchorElement).style.color =
                         "#fff";
                       (e.currentTarget as HTMLAnchorElement).style.background =
-                        "rgba(110,20,212,0.08)";
+                        "rgba(255,255,255,0.08)";
                     }}
                     onMouseLeave={(e) => {
                       (e.currentTarget as HTMLAnchorElement).style.color =

@@ -59,6 +59,17 @@ export default function HulyButton({
         opacity: disabled ? 0.6 : 1,
     };
 
+    // Define cursor glow colors based on the glowColor prop
+    const isWhiteGlow = glowColor === "white";
+
+    const coreGlowGradient = isWhiteGlow
+        ? "radial-gradient(circle at center, #FFFFFF 0%, rgba(255, 255, 255, 0.8) 30%, rgba(255, 255, 255, 0.4) 60%, transparent 80%)"
+        : "radial-gradient(circle at center, #FFFFFF 0%, #A855F7 25%, #6E14D4 50%, transparent 75%)";
+
+    const bgGlowGradient = isWhiteGlow
+        ? "radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 60%, transparent 100%)"
+        : "radial-gradient(circle at center, rgba(110, 20, 212, 0.6) 0%, rgba(110, 20, 212, 0.2) 60%, transparent 100%)";
+
     // The Huly glow effect layer
     const glowLayer = (
         <div
@@ -75,12 +86,11 @@ export default function HulyButton({
                     transition: "transform 0.15s cubic-bezier(0.23, 1, 0.32, 1)",
                 }}
             >
-                {/* Intense Core highlight - Purple themed */}
+                {/* Intense Core highlight */}
                 <div
                     className="absolute h-[140px] w-[140px]"
                     style={{
-                        background: "radial-gradient(center, circle, #FFFFFF 0%, #A855F7 30%, #6E14D4 60%, transparent 80%)",
-                        backgroundImage: "radial-gradient(circle at center, #FFFFFF 0%, #A855F7 25%, #6E14D4 50%, transparent 75%)",
+                        background: coreGlowGradient,
                         filter: "blur(4px)",
                         opacity: 0.8,
                     }}
@@ -89,7 +99,7 @@ export default function HulyButton({
                 <div
                     className="absolute h-[120px] w-[220px]"
                     style={{
-                        background: "radial-gradient(circle at center, rgba(110, 20, 212, 0.6) 0%, rgba(110, 20, 212, 0.2) 60%, transparent 100%)",
+                        background: bgGlowGradient,
                         filter: "blur(12px)",
                     }}
                 />
