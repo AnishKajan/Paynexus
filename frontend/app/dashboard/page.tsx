@@ -129,20 +129,6 @@ export default function DashboardPage() {
           >
             ● Sandbox
           </span>
-
-          <button
-            onClick={() => router.push("/onboarding")}
-            className="px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200"
-            style={{ background: "#6E14D4", color: "#fff", boxShadow: "0 0 16px rgba(110,20,212,0.3)" }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = "0 0 28px rgba(110,20,212,0.6)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = "0 0 16px rgba(110,20,212,0.3)";
-            }}
-          >
-            Complete Onboarding →
-          </button>
         </div>
       </div>
 

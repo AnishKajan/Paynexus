@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+import UserProfileMenu from "../components/UserProfileMenu";
 
 function Spinner() {
     return (
@@ -18,7 +19,6 @@ const NAV_ITEMS = [
     { label: "Compliance", href: "/dashboard/compliance", icon: "◈" },
     { label: "Risk", href: "/dashboard/risk", icon: "⚠" },
     { label: "API Keys", href: "/dashboard/api-keys", icon: "⚿" },
-    { label: "Settings", href: "/dashboard/settings", icon: "⚙" },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -105,27 +105,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     })}
                 </nav>
 
-                {/* User / Sign out */}
+                {/* User / Settings / Sign out */}
                 <div className="mt-auto pt-6" style={{ borderTop: "1px solid rgba(55,65,81,0.3)" }}>
-                    <div className="flex items-center gap-3 px-2 mb-4">
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-                            style={{ background: "rgba(110,20,212,0.2)", color: "#a855f7", border: "1px solid rgba(110,20,212,0.3)" }}>
-                            {(userEmail?.[0] || "U").toUpperCase()}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="text-xs font-medium text-white/70 truncate">{userEmail}</p>
-                            <p className="text-[10px] font-mono" style={{ color: "rgba(255,255,255,0.25)" }}>Sandbox</p>
-                        </div>
-                    </div>
-                    <button
-                        onClick={handleSignOut}
-                        className="w-full text-xs font-mono py-2 rounded-lg transition-all duration-200"
-                        style={{ color: "rgba(255,255,255,0.3)", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(55,65,81,0.3)" }}
-                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(239,68,68,0.3)"; e.currentTarget.style.color = "#ef4444"; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(55,65,81,0.3)"; e.currentTarget.style.color = "rgba(255,255,255,0.3)"; }}
-                    >
-                        Sign out
-                    </button>
+                    <UserProfileMenu email={userEmail} onSignOut={handleSignOut} />
                 </div>
             </aside>
 
