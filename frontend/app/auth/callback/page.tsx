@@ -21,9 +21,10 @@ export default function AuthCallbackPage() {
                     return;
                 }
 
-                // Onboarding is UI-only; track completion in localStorage
-                const onboarded = localStorage.getItem(`onboarded_${session.user.id}`);
-                router.replace(onboarded ? "/dashboard" : "/onboarding");
+                // New user if account was created within the last 5 minutes
+                const createdAt = new Date(session.user.created_at).getTime();
+                const isNewUser = Date.now() - createdAt < 5 * 60 * 1000;
+                router.replace(isNewUser ? "/onboarding" : "/dashboard");
             }
         };
 

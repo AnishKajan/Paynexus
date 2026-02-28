@@ -81,9 +81,8 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
     useEffect(() => {
         supabase.auth.getSession().then(({ data }) => {
             if (data.session) {
-                // Onboarding is UI-only; completion tracked in localStorage
-                const onboarded = localStorage.getItem(`onboarded_${data.session.user.id}`);
-                router.replace(onboarded ? "/dashboard" : "/onboarding");
+                // Already authenticated — go straight to dashboard
+                router.replace("/dashboard");
             } else {
                 setSessionChecked(true);
             }
@@ -176,9 +175,7 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
             setError(authError.message);
             return;
         }
-        const { data: { user } } = await supabase.auth.getUser();
-        const onboarded = user ? localStorage.getItem(`onboarded_${user.id}`) : null;
-        router.replace(mode === "signup" || !onboarded ? "/onboarding" : "/dashboard");
+        router.replace(mode === "signup" ? "/onboarding" : "/dashboard");
     };
 
     // ── OTP input change ───────────────────────────────────────────────────────
