@@ -33,18 +33,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             if (!data.session) {
                 router.replace("/login");
             } else {
-                // Check if user has an organization
-                const userId = data.session.user.id;
-                const { data: members } = await supabase
-                    .from("organization_members")
-                    .select("org_id")
-                    .eq("user_id", userId)
-                    .limit(1);
+                // Temporarily bypassing the explicit database organization check 
+                // to prevent a redirect loop back to onboarding when org creation fails.
+                // The initial login route still handles basic routing correctly.
 
-                if (!members || members.length === 0) {
-                    router.replace("/onboarding");
-                    return;
-                }
 
                 setUserEmail(data.session.user.email ?? "user");
                 setLoading(false);
