@@ -164,7 +164,7 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
     const verifyOtp = async (code: string) => {
         setError("");
         setLoading(true);
-        const { error: authError } = await supabase.auth.verifyOtp({
+        const { data, error: authError } = await supabase.auth.verifyOtp({
             email: email.trim(),
             token: code,
             type: "email",
@@ -175,7 +175,9 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
             setError(authError.message);
             return;
         }
-        router.replace(mode === "signup" ? "/onboarding" : "/dashboard");
+
+        const onboarded = data.session?.user.user_metadata?.onboarded;
+        router.replace(onboarded ? "/dashboard" : "/onboarding");
     };
 
     // ── OTP input change ───────────────────────────────────────────────────────
