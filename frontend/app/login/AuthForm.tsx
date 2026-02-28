@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import Link from "next/link";
+import HulyButton from "../components/HulyButton";
 
 // ─── Google logo SVG ──────────────────────────────────────────────────────────
 function GoogleLogo() {
@@ -174,7 +175,7 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
             setError(authError.message);
             return;
         }
-        router.replace("/dashboard");
+        router.replace(mode === "signup" ? "/onboarding" : "/dashboard");
     };
 
     // ── OTP input change ───────────────────────────────────────────────────────
@@ -238,7 +239,7 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
         const { error: authError } = await supabase.auth.signInWithOAuth({
             provider: "google",
             options: {
-                redirectTo: `${window.location.origin}/dashboard`,
+                redirectTo: `${window.location.origin}${mode === "signup" ? "/onboarding" : "/dashboard"}`,
             },
         });
         if (authError) {
@@ -400,25 +401,16 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
                 )}
 
                 {/* Submit button */}
-                <button
+                <HulyButton
                     onClick={handleSendCode}
                     disabled={loading}
-                    className="w-full mt-6 py-3 rounded-lg text-sm font-semibold tracking-wide transition-all duration-200 flex items-center justify-center gap-2"
+                    className="w-full mt-6 py-3 rounded-full"
                     style={{
-                        background: loading ? "rgba(110,20,212,0.6)" : "#6E14D4",
-                        color: "#fff",
                         boxShadow: "0 0 20px rgba(110,20,212,0.3)",
-                        cursor: loading ? "wait" : "pointer",
-                    }}
-                    onMouseEnter={(e) => {
-                        if (!loading) e.currentTarget.style.boxShadow = "0 0 36px rgba(110,20,212,0.6)";
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.boxShadow = "0 0 20px rgba(110,20,212,0.3)";
                     }}
                 >
                     {loading ? <><Spinner /> Sending…</> : content.buttonText}
-                </button>
+                </HulyButton>
 
                 {/* Divider */}
                 <div className="flex items-center gap-3 my-6">
@@ -428,29 +420,16 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
                 </div>
 
                 {/* Google OAuth */}
-                <button
+                <HulyButton
                     onClick={handleGoogle}
                     disabled={googleLoading}
-                    className="w-full py-3 rounded-lg text-sm font-medium tracking-wide transition-all duration-200 flex items-center justify-center gap-3 hover:glow-purple"
+                    className="w-full py-3 rounded-full"
                     style={{
-                        background: "rgba(255,255,255,0.04)",
                         border: "1px solid rgba(148,163,184,0.18)",
-                        color: "rgba(255,255,255,0.75)",
-                        cursor: googleLoading ? "wait" : "pointer",
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = "rgba(110,20,212,0.5)";
-                        e.currentTarget.style.color = "#fff";
-                        e.currentTarget.style.background = "rgba(110,20,212,0.06)";
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = "rgba(148,163,184,0.18)";
-                        e.currentTarget.style.color = "rgba(255,255,255,0.75)";
-                        e.currentTarget.style.background = "rgba(255,255,255,0.04)";
                     }}
                 >
                     {googleLoading ? <Spinner /> : <><GoogleLogo /> Continue with Google</>}
-                </button>
+                </HulyButton>
 
                 {/* Toggle Mode */}
                 <p className="mt-8 text-center text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
@@ -516,25 +495,16 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
                 </div>
 
                 {/* Verify button */}
-                <button
+                <HulyButton
                     onClick={() => verifyOtp(otp.join(""))}
                     disabled={loading || otp.some((d) => !d)}
-                    className="w-full py-3 rounded-lg text-sm font-semibold tracking-wide transition-all duration-200 flex items-center justify-center gap-2"
+                    className="w-full py-3 rounded-full"
                     style={{
-                        background: loading || otp.some((d) => !d) ? "rgba(110,20,212,0.4)" : "#6E14D4",
-                        color: "#fff",
                         boxShadow: "0 0 20px rgba(110,20,212,0.3)",
-                        cursor: loading || otp.some((d) => !d) ? "not-allowed" : "pointer",
-                    }}
-                    onMouseEnter={(e) => {
-                        if (!loading && otp.every((d) => d)) e.currentTarget.style.boxShadow = "0 0 36px rgba(110,20,212,0.6)";
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.boxShadow = "0 0 20px rgba(110,20,212,0.3)";
                     }}
                 >
                     {loading ? <><Spinner /> Verifying…</> : "Verify"}
-                </button>
+                </HulyButton>
 
                 {/* Resend */}
                 <div className="mt-4 text-center">

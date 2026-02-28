@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import HulyButton from "./HulyButton";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -66,9 +67,8 @@ export default function Navbar() {
             background: scrolled
               ? "rgba(13,13,13,0.96)"
               : "rgba(13,13,13,0.85)",
-            border: `1px solid ${
-              scrolled ? "rgba(110,20,212,0.35)" : "rgba(110,20,212,0.25)"
-            }`,
+            border: `1px solid ${scrolled ? "rgba(110,20,212,0.35)" : "rgba(110,20,212,0.25)"
+              }`,
             backdropFilter: "blur(20px)",
             animation: scrolled
               ? "glowBreathScrolled 4s ease-in-out infinite"
@@ -138,51 +138,25 @@ export default function Navbar() {
 
           {/* CTA */}
           <div className="flex items-center gap-2.5 flex-shrink-0 ml-auto">
-            <a
+            <HulyButton
               href="/login"
-              className="hidden md:block text-sm px-3 py-1.5 rounded-xl transition-all duration-200"
+              className="hidden md:flex text-sm px-3 py-1.5 rounded-full border-none"
               style={{
                 color: "rgba(255,255,255,0.5)",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.color =
-                  "rgba(255,255,255,0.9)";
-                (e.currentTarget as HTMLAnchorElement).style.background =
-                  "rgba(110,20,212,0.1)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.color =
-                  "rgba(255,255,255,0.5)";
-                (e.currentTarget as HTMLAnchorElement).style.background =
-                  "transparent";
+                background: "transparent"
               }}
             >
               Sign in
-            </a>
-            <a
+            </HulyButton>
+            <HulyButton
               href="/signup"
-              className="text-sm font-semibold px-4 py-2 rounded-2xl transition-all duration-200 inline-block"
+              className="text-sm font-semibold px-4 py-2 rounded-full"
               style={{
-                background: "#6E14D4",
-                color: "#fff",
                 boxShadow: "0 4px 16px rgba(110,20,212,0.3)",
-                textDecoration: "none",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.transform =
-                  "translateY(-2px)";
-                (e.currentTarget as HTMLAnchorElement).style.boxShadow =
-                  "0 8px 24px rgba(110,20,212,0.5)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.transform =
-                  "translateY(0)";
-                (e.currentTarget as HTMLAnchorElement).style.boxShadow =
-                  "0 4px 16px rgba(110,20,212,0.3)";
               }}
             >
               Get API Key
-            </a>
+            </HulyButton>
           </div>
         </div>
       </header>

@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase, getAccessToken } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabaseClient";
+import HulyButton from "../components/HulyButton";
 
 // ─── Spinner ──────────────────────────────────────────────────────────────────
 function Spinner({ size = 4 }: { size?: number }) {
@@ -74,6 +75,17 @@ const COUNTRIES = [
     "United States", "Canada", "United Kingdom", "Germany", "France",
     "Australia", "Japan", "Singapore", "India", "Brazil", "Mexico",
     "Netherlands", "Sweden", "Switzerland", "Ireland",
+];
+
+const US_STATES = [
+    "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
+    "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
+    "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan",
+    "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire",
+    "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio",
+    "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
+    "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia",
+    "Wisconsin", "Wyoming", "District of Columbia",
 ];
 
 // ─── Shared styles ────────────────────────────────────────────────────────────
@@ -196,17 +208,33 @@ export default function OnboardingWizard() {
     // ── Step validation ───────────────────────────────────────────────────────
     const validateStep = (): boolean => {
         switch (currentStep) {
-            case 0:
+            case 0: {
                 if (!form.legalName.trim()) { setError("Legal Entity Name is required."); return false; }
+                if (form.legalName.trim().length < 2) { setError("Legal Entity Name must be at least 2 characters."); return false; }
                 if (!form.country) { setError("Please select a country."); return false; }
+                if (form.country === "United States") {
+                    if (!form.stateProvince) { setError("State is required for United States businesses."); return false; }
+                    if (!US_STATES.includes(form.stateProvince)) { setError("Please select a valid US state."); return false; }
+                } else {
+                    if (!form.stateProvince.trim()) { setError("State / Province is required."); return false; }
+                }
                 return true;
-            case 1:
-                if (!form.taxId.trim()) { setError("Tax ID is required."); return false; }
+            }
+            case 1: {
+                const digits = form.taxId.replace(/\D/g, "");
+                if (!form.taxId.trim()) { setError("SSN or EIN is required."); return false; }
+                if (digits.length !== 9) { setError("SSN must be 9 digits (XXX-XX-XXXX) or EIN must be 9 digits (XX-XXXXXXX)."); return false; }
                 return true;
-            case 2:
+            }
+            case 2: {
+                const routingDigits = form.routingNumber.replace(/\D/g, "");
+                const accountDigits = form.accountNumber.replace(/\D/g, "");
                 if (!form.routingNumber.trim()) { setError("Routing number is required."); return false; }
+                if (routingDigits.length !== 9) { setError("Routing number must be exactly 9 digits."); return false; }
                 if (!form.accountNumber.trim()) { setError("Account number is required."); return false; }
+                if (accountDigits.length < 4 || accountDigits.length > 17) { setError("Account number must be between 4 and 17 digits."); return false; }
                 return true;
+            }
             case 3:
                 if (!form.certifyAccurate) { setError("You must certify that your information is accurate."); return false; }
                 if (!form.agreeMerchant) { setError("You must agree to the Merchant Agreement."); return false; }
@@ -228,51 +256,17 @@ export default function OnboardingWizard() {
         setCurrentStep((s) => Math.max(s - 1, 0));
     };
 
-    // ── Submit ────────────────────────────────────────────────────────────────
+    // ── Submit (no backend — just simulate success) ─────────────────────────
     const handleSubmit = async () => {
         if (!validateStep()) return;
         setLoading(true);
         setError("");
 
-        try {
-            const token = await getAccessToken();
-            const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "";
-
-            const res = await fetch(`${apiBase}/onboarding/complete`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    legal_name: form.legalName,
-                    dba_name: form.dbaName,
-                    country: form.country,
-                    state_province: form.stateProvince,
-                    tax_id: form.taxId,
-                    routing_number: form.routingNumber,
-                    account_number: form.accountNumber,
-                }),
-            });
-
-            if (!res.ok) {
-                const body = await res.json().catch(() => null);
-                throw new Error(body?.message || `Server error (${res.status})`);
-            }
-
-            setSuccess(true);
-            setTimeout(() => router.replace("/dashboard"), 2200);
-        } catch (err: unknown) {
-            // For demo: if backend is down, simulate success
-            if (err instanceof TypeError && err.message.includes("fetch")) {
-                setSuccess(true);
-                setTimeout(() => router.replace("/dashboard"), 2200);
-                return;
-            }
-            setError(err instanceof Error ? err.message : "Something went wrong.");
-        } finally {
-            setLoading(false);
-        }
+        // Simulate a brief verification delay
+        await new Promise((r) => setTimeout(r, 1800));
+        setLoading(false);
+        setSuccess(true);
+        setTimeout(() => router.replace("/dashboard"), 2500);
     };
 
     // ── Loading state ─────────────────────────────────────────────────────────
@@ -405,7 +399,23 @@ export default function OnboardingWizard() {
                                     {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
                                 </select>
                             </div>
-                            <Field label="State / Province" id="ob-state" placeholder="California" value={form.stateProvince} onChange={(v) => update("stateProvince", v)} />
+                            {form.country === "United States" ? (
+                                <div>
+                                    <label className="block text-xs font-mono uppercase tracking-widest mb-2" style={{ color: "rgba(255,255,255,0.45)" }} htmlFor="ob-state">State</label>
+                                    <select
+                                        id="ob-state" value={form.stateProvince}
+                                        onChange={(e) => update("stateProvince", e.target.value)}
+                                        className="w-full px-4 py-3 rounded-lg text-sm appearance-none cursor-pointer"
+                                        style={{ ...inputStyle, color: form.stateProvince ? "#e2e8f0" : "rgba(255,255,255,0.15)" }}
+                                        onFocus={handleFocus} onBlur={handleBlur}
+                                    >
+                                        <option value="" disabled>Select state</option>
+                                        {US_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
+                                    </select>
+                                </div>
+                            ) : (
+                                <Field label="State / Province" id="ob-state" placeholder="e.g. Ontario, Bavaria" value={form.stateProvince} onChange={(v) => update("stateProvince", v)} />
+                            )}
                         </div>
                     </div>
                 )}
@@ -415,7 +425,7 @@ export default function OnboardingWizard() {
                     <div className="space-y-5">
                         <div className="p-4 rounded-lg" style={{ background: "rgba(110,20,212,0.06)", border: "1px solid rgba(110,20,212,0.12)" }}>
                             <p className="text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>
-                                <span className="font-semibold text-purple-400">Demo Environment</span> — Enter any formatted value. Real validation is disabled for this demo.
+                                <span className="font-semibold text-purple-400">Format Required</span> — SSN must be 9 digits (e.g. 123-45-6789) or EIN 9 digits (e.g. 12-3456789).
                             </p>
                         </div>
                         <Field label="SSN / Employer Identification Number (Tax ID)" id="ob-taxid" placeholder="000-00-0000 or 12-3456789" value={form.taxId} onChange={(v) => update("taxId", v)} />
@@ -427,7 +437,7 @@ export default function OnboardingWizard() {
                     <div className="space-y-5">
                         <div className="p-4 rounded-lg" style={{ background: "rgba(110,20,212,0.06)", border: "1px solid rgba(110,20,212,0.12)" }}>
                             <p className="text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>
-                                <span className="font-semibold text-purple-400">Sandbox Mode</span> — Any dummy routing/account numbers are accepted.
+                                <span className="font-semibold text-purple-400">Format Required</span> — Routing: exactly 9 digits. Account: 4–17 digits.
                             </p>
                         </div>
                         <Field label="Bank Routing Number" id="ob-routing" placeholder="021000021" value={form.routingNumber} onChange={(v) => update("routingNumber", v)} />
@@ -483,51 +493,39 @@ export default function OnboardingWizard() {
             {/* ── Navigation Buttons ─────────────────────────────────────────── */}
             <div className="flex justify-between mt-8 gap-4">
                 {currentStep > 0 ? (
-                    <button
+                    <HulyButton
                         onClick={goBack}
-                        className="px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 hover:text-white"
+                        className="px-6 py-3 rounded-full"
                         style={{
-                            background: "rgba(255,255,255,0.04)",
                             border: "1px solid rgba(55, 65, 81, 0.6)",
                             color: "rgba(255,255,255,0.5)",
                         }}
-                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(110,20,212,0.4)"; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(55, 65, 81, 0.6)"; }}
                     >
                         ← Back
-                    </button>
+                    </HulyButton>
                 ) : <div />}
 
                 {currentStep < 3 ? (
-                    <button
+                    <HulyButton
                         onClick={goNext}
-                        className="px-8 py-3 rounded-lg text-sm font-semibold tracking-wide transition-all duration-200 flex items-center gap-2"
+                        className="px-8 py-3 rounded-full"
                         style={{
-                            background: "#6E14D4",
-                            color: "#fff",
                             boxShadow: "0 0 20px rgba(110,20,212,0.3)",
                         }}
-                        onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 0 36px rgba(110,20,212,0.6)"; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 0 20px rgba(110,20,212,0.3)"; }}
                     >
                         Continue →
-                    </button>
+                    </HulyButton>
                 ) : (
-                    <button
+                    <HulyButton
                         onClick={handleSubmit}
                         disabled={loading}
-                        className="px-8 py-3 rounded-lg text-sm font-semibold tracking-wide transition-all duration-200 flex items-center gap-2"
+                        className="px-8 py-3 rounded-full"
                         style={{
-                            background: loading ? "rgba(110,20,212,0.6)" : "#6E14D4",
-                            color: "#fff",
                             boxShadow: "0 0 20px rgba(110,20,212,0.3)",
-                            cursor: loading ? "wait" : "pointer",
                         }}
-                        onMouseEnter={(e) => { if (!loading) e.currentTarget.style.boxShadow = "0 0 36px rgba(110,20,212,0.6)"; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 0 20px rgba(110,20,212,0.3)"; }}
                     >
                         {loading ? <><Spinner /> Verifying…</> : "Complete Verification ✓"}
-                    </button>
+                    </HulyButton>
                 )}
             </div>
         </div>
