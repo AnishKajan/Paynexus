@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import HulyButton from "./HulyButton";
 
 const SCRAMBLE_CHARS = "!@#$%^&*<>?/|{}[]";
 const HEADLINE_WORDS = [
@@ -207,51 +208,25 @@ export default function HeroSection({ visible }: HeroSectionProps) {
           transition: "opacity 600ms ease-out 1000ms",
         }}
       >
-        <a
+        <HulyButton
           href="/signup"
-          className="px-8 py-3 rounded-lg font-semibold text-sm tracking-wide transition-all duration-200 inline-block"
+          className="px-8 py-3 rounded-full"
           style={{
-            background: "#6E14D4",
-            color: "#fff",
             boxShadow: "0 0 20px rgba(110,20,212,0.4)",
-            textDecoration: "none",
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLAnchorElement).style.boxShadow =
-              "0 0 32px rgba(110,20,212,0.7), 0 0 60px rgba(110,20,212,0.3)";
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLAnchorElement).style.boxShadow =
-              "0 0 20px rgba(110,20,212,0.4)";
           }}
         >
           Start Building →
-        </a>
-        <a
+        </HulyButton>
+        <HulyButton
           href="https://paynexus-docs.vercel.app/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="px-8 py-3 rounded-lg font-semibold text-sm tracking-wide transition-all duration-200 border inline-block"
+          className="px-8 py-3 rounded-full border"
           style={{
             borderColor: "rgba(255,255,255,0.15)",
             color: "rgba(255,255,255,0.8)",
-            background: "transparent",
-            textDecoration: "none",
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLAnchorElement).style.borderColor =
-              "rgba(110,20,212,0.6)";
-            (e.currentTarget as HTMLAnchorElement).style.color = "#fff";
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLAnchorElement).style.borderColor =
-              "rgba(255,255,255,0.15)";
-            (e.currentTarget as HTMLAnchorElement).style.color =
-              "rgba(255,255,255,0.8)";
           }}
         >
           View Docs
-        </a>
+        </HulyButton>
       </div>
 
       {/* Stats strip */}

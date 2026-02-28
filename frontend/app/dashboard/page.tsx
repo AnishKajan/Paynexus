@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+import HulyButton from "../components/HulyButton";
 
 // ─── Spinner ──────────────────────────────────────────────────────────────────
 function Spinner() {
@@ -155,18 +156,19 @@ export default function DashboardPage() {
                         { label: "Webhooks", active: false, icon: "⊡" },
                         { label: "Settings", active: false, icon: "⚙" },
                     ].map((item) => (
-                        <button
+                        <HulyButton
                             key={item.label}
-                            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium mb-1 transition-all duration-200 w-full text-left"
+                            className={`flex items-center gap-3 px-3 py-2.5 rounded-full mb-1 w-full ${item.active ? "opacity-100" : "opacity-60"}`}
                             style={{
                                 background: item.active ? "rgba(110,20,212,0.12)" : "transparent",
                                 color: item.active ? "#a855f7" : "rgba(255,255,255,0.4)",
                                 border: item.active ? "1px solid rgba(110,20,212,0.2)" : "1px solid transparent",
+                                justifyContent: "flex-start",
                             }}
                         >
                             <span className="text-base">{item.icon}</span>
                             {item.label}
-                        </button>
+                        </HulyButton>
                     ))}
 
                     <div className="mt-auto pt-6" style={{ borderTop: "1px solid rgba(55,65,81,0.3)" }}>
@@ -179,15 +181,13 @@ export default function DashboardPage() {
                                 <p className="text-[10px] font-mono" style={{ color: "rgba(255,255,255,0.25)" }}>Sandbox</p>
                             </div>
                         </div>
-                        <button
+                        <HulyButton
                             onClick={handleSignOut}
-                            className="mt-4 w-full text-xs font-mono py-2 rounded-lg transition-all duration-200"
+                            className="mt-4 w-full text-xs font-mono py-2 rounded-full"
                             style={{ color: "rgba(255,255,255,0.3)", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(55,65,81,0.3)" }}
-                            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(239,68,68,0.3)"; e.currentTarget.style.color = "#ef4444"; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(55,65,81,0.3)"; e.currentTarget.style.color = "rgba(255,255,255,0.3)"; }}
                         >
                             Sign out
-                        </button>
+                        </HulyButton>
                     </div>
                 </aside>
 
@@ -207,15 +207,13 @@ export default function DashboardPage() {
                                 style={{ background: "rgba(34,197,94,0.1)", color: "#22c55e", border: "1px solid rgba(34,197,94,0.2)" }}>
                                 ● Sandbox
                             </span>
-                            <button
+                            <HulyButton
                                 onClick={() => router.push("/onboarding")}
-                                className="px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200"
-                                style={{ background: "#6E14D4", color: "#fff", boxShadow: "0 0 16px rgba(110,20,212,0.3)" }}
-                                onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 0 28px rgba(110,20,212,0.6)"; }}
-                                onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 0 16px rgba(110,20,212,0.3)"; }}
+                                className="px-4 py-2 rounded-full text-xs"
+                                style={{ boxShadow: "0 0 16px rgba(110,20,212,0.3)" }}
                             >
                                 Complete Onboarding →
-                            </button>
+                            </HulyButton>
                         </div>
                     </div>
 
@@ -292,14 +290,12 @@ export default function DashboardPage() {
                                     <code className="flex-1 px-3 py-2 rounded-lg text-xs font-mono truncate" style={{ background: "rgba(15,23,42,0.9)", border: "1px solid rgba(55,65,81,0.5)", color: "rgba(255,255,255,0.5)" }}>
                                         pnx_test_sk_••••••••••4f2a
                                     </code>
-                                    <button
-                                        className="px-3 py-2 rounded-lg text-xs font-mono transition-all duration-200"
-                                        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(55,65,81,0.5)", color: "rgba(255,255,255,0.4)" }}
-                                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(110,20,212,0.4)"; e.currentTarget.style.color = "#a855f7"; }}
-                                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(55,65,81,0.5)"; e.currentTarget.style.color = "rgba(255,255,255,0.4)"; }}
+                                    <HulyButton
+                                        className="px-3 py-2 rounded-full text-xs font-mono"
+                                        style={{ border: "1px solid rgba(55, 65, 81, 0.5)", color: "rgba(255,255,255,0.4)" }}
                                     >
                                         Copy
-                                    </button>
+                                    </HulyButton>
                                 </div>
                             </div>
                         </div>
