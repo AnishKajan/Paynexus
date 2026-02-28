@@ -80,9 +80,19 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
 
     // ── Session check on mount ──────────────────────────────────────────────────
     useEffect(() => {
-        supabase.auth.getSession().then(({ data }) => {
+        supabase.auth.getSession().then(async ({ data }) => {
             if (data.session) {
-                router.replace("/dashboard");
+                // If logged in, check if user has an organization
+                const { data: orgs } = await supabase
+                    .from("organizations")
+                    .select("id")
+                    .limit(1);
+
+                if (!orgs || orgs.length === 0) {
+                    router.replace("/onboarding");
+                } else {
+                    router.replace("/dashboard");
+                }
             } else {
                 setSessionChecked(true);
             }
