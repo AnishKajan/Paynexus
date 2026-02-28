@@ -15,13 +15,21 @@ export default function AuthCallbackPage() {
             if (!redirected) {
                 redirected = true;
 
+                // Get session for user id
+                const { data: { session } } = await supabase.auth.getSession();
+                if (!session) {
+                    router.replace("/login");
+                    return;
+                }
+
                 // Check if user has an organization
-                const { data: orgs } = await supabase
-                    .from("organizations")
-                    .select("id")
+                const { data: members } = await supabase
+                    .from("organization_members")
+                    .select("org_id")
+                    .eq("user_id", session.user.id)
                     .limit(1);
 
-                if (!orgs || orgs.length === 0) {
+                if (!members || members.length === 0) {
                     router.replace("/onboarding");
                 } else {
                     router.replace("/dashboard");
