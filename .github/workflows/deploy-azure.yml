@@ -82,12 +82,13 @@ jobs:
           echo "image=ghcr.io/${{ github.repository_owner }}/paynexus-backend:${TAG}" >> "$GITHUB_OUTPUT"
           echo "Deploying: ghcr.io/${{ github.repository_owner }}/paynexus-backend:${TAG}"
 
-      # ── 3. Register providers (idempotent) ────────────────────────────────────
+      # ── 3. Register providers (best-effort — requires subscription Contributor)
+      # Azure auto-registers providers on first resource creation, so this step
+      # failing is non-fatal when the SP is scoped to the resource group only.
       - name: Register Azure providers
         run: |
-          az provider register --namespace Microsoft.App --wait
-          az provider register --namespace Microsoft.OperationalInsights --wait
-          echo "Providers registered."
+          az provider register --namespace Microsoft.App --wait || echo "Provider registration skipped (SP may lack subscription scope — Azure will auto-register on first use)"
+          az provider register --namespace Microsoft.OperationalInsights --wait || echo "Provider registration skipped"
 
       # ── 4. Ensure resource group ───────────────────────────────────────────────
       - name: Ensure resource group
