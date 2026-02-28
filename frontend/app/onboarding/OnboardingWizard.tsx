@@ -256,15 +256,13 @@ export default function OnboardingWizard() {
         setCurrentStep((s) => Math.max(s - 1, 0));
     };
 
-    // ── Submit (UI only — marks onboarding complete in localStorage) ─────────
+    // ── Submit (UI only — writes onboarded flag to auth user metadata) ───────
     const handleSubmit = () => {
         if (!validateStep()) return;
         setLoading(true);
         setError("");
-        supabase.auth.getUser().then(({ data: { user } }) => {
-            if (user) {
-                localStorage.setItem(`onboarded_${user.id}`, "true");
-            }
+        // supabase.auth.updateUser writes to auth user_metadata, not any DB table
+        supabase.auth.updateUser({ data: { onboarded: true } }).then(() => {
             setTimeout(() => {
                 setLoading(false);
                 setSuccess(true);

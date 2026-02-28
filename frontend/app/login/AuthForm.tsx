@@ -81,8 +81,8 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
     useEffect(() => {
         supabase.auth.getSession().then(({ data }) => {
             if (data.session) {
-                // Already authenticated — go straight to dashboard
-                router.replace("/dashboard");
+                const onboarded = data.session.user.user_metadata?.onboarded;
+                router.replace(onboarded ? "/dashboard" : "/onboarding");
             } else {
                 setSessionChecked(true);
             }

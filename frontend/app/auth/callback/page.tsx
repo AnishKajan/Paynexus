@@ -21,10 +21,9 @@ export default function AuthCallbackPage() {
                     return;
                 }
 
-                // New user if account was created within the last 5 minutes
-                const createdAt = new Date(session.user.created_at).getTime();
-                const isNewUser = Date.now() - createdAt < 5 * 60 * 1000;
-                router.replace(isNewUser ? "/onboarding" : "/dashboard");
+                // Route based on whether the user has completed onboarding
+                const onboarded = session.user.user_metadata?.onboarded;
+                router.replace(onboarded ? "/dashboard" : "/onboarding");
             }
         };
 
