@@ -128,7 +128,7 @@ function FeatureCard({ feature, index, visible }: FeatureCardProps) {
 
   return (
     <div
-      className="relative rounded-xl overflow-hidden"
+      className="relative rounded-xl overflow-hidden glow-breath"
       style={{
         background: "#0D0D0D",
         border: `1px solid ${feature.isMcp ? "rgba(110,20,212,0.3)" : "rgba(255,255,255,0.06)"}`,

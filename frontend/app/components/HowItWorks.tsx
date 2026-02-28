@@ -280,7 +280,7 @@ export default function HowItWorks() {
           }}
         >
           <div
-            className="inline-flex items-center gap-6 px-6 py-4 rounded-xl font-mono text-sm"
+            className="inline-flex items-center gap-6 px-6 py-4 rounded-xl font-mono text-sm glow-breath"
             style={{
               background: "#0D0D0D",
               border: "1px solid rgba(110,20,212,0.2)",

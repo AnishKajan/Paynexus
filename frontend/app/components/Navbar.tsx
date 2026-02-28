@@ -151,6 +151,7 @@ export default function Navbar() {
             <HulyButton
               href="/signup"
               className="text-sm font-semibold px-4 py-2 rounded-full"
+              glowColor="white"
               style={{
                 boxShadow: "0 4px 16px rgba(110,20,212,0.3)",
               }}

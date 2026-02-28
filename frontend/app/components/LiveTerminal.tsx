@@ -117,7 +117,7 @@ export default function LiveTerminal() {
 
   return (
     <div
-      className="font-mono text-xs leading-relaxed relative"
+      className="font-mono text-xs leading-relaxed relative glow-breath"
       style={{
         width: 400,
         height: 280,

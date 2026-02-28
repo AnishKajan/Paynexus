@@ -220,6 +220,7 @@ export default function HeroSection({ visible }: HeroSectionProps) {
         <HulyButton
           href="https://paynexus-docs.vercel.app/"
           className="px-8 py-3 rounded-full border"
+          glowColor="white"
           style={{
             borderColor: "rgba(255,255,255,0.15)",
             color: "rgba(255,255,255,0.8)",

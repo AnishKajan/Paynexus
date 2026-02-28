@@ -354,7 +354,7 @@ export default function ComplianceRiskDashboard({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Risk bars */}
         <div
-          className="rounded-xl p-5 flex flex-col gap-4"
+          className="rounded-xl p-5 flex flex-col gap-4 glow-breath"
           style={{
             background: "#0D0D0D",
             border: "1px solid rgba(110,20,212,0.15)",
@@ -390,7 +390,7 @@ export default function ComplianceRiskDashboard({
         <div className="flex flex-col gap-4">
           {/* World map */}
           <div
-            className="rounded-xl p-4"
+            className="rounded-xl p-4 glow-breath"
             style={{
               background: "#0D0D0D",
               border: "1px solid rgba(110,20,212,0.15)",
@@ -426,7 +426,7 @@ export default function ComplianceRiskDashboard({
 
           {/* Flagged patterns */}
           <div
-            className="rounded-xl p-4 font-mono text-xs"
+            className="rounded-xl p-4 font-mono text-xs glow-breath"
             style={{
               background: "#0D0D0D",
               border: "1px solid rgba(239,68,68,0.15)",

@@ -56,7 +56,7 @@ export default function CTASection() {
 
       <div className="max-w-5xl mx-auto">
         <div
-          className="rounded-2xl p-10 md:p-16 relative overflow-hidden"
+          className="rounded-2xl p-10 md:p-16 relative overflow-hidden glow-breath-strong"
           style={{
             background: "#0D0D0D",
             border: "1px solid rgba(110,20,212,0.25)",
@@ -161,7 +161,7 @@ export default function CTASection() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <MagneticWrapper strength={20}>
                   <button
-                    className="px-6 py-3 rounded-lg font-bold text-sm transition-all duration-300 w-full sm:w-auto"
+                    className="px-6 py-3 rounded-lg font-bold text-sm transition-all duration-300 w-full sm:w-auto btn-glow-breath"
                     style={{
                       background: "#6E14D4",
                       color: "#fff",
@@ -188,24 +188,19 @@ export default function CTASection() {
                     href="https://paynexus-docs.vercel.app/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-6 py-3 rounded-lg font-bold text-sm border transition-all duration-300 w-full sm:w-auto text-center"
+                    className="px-6 py-3 rounded-lg font-bold text-sm border transition-all duration-300 w-full sm:w-auto text-center btn-glow-breath-white"
                     style={{
-                      borderColor: "rgba(255,255,255,0.15)",
                       color: "rgba(255,255,255,0.8)",
                       background: "rgba(255,255,255,0.03)",
                       textDecoration: "none",
                     }}
                     onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLAnchorElement).style.borderColor =
-                        "rgba(110,20,212,0.6)";
                       (e.currentTarget as HTMLAnchorElement).style.color =
                         "#fff";
                       (e.currentTarget as HTMLAnchorElement).style.background =
                         "rgba(110,20,212,0.08)";
                     }}
                     onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLAnchorElement).style.borderColor =
-                        "rgba(255,255,255,0.15)";
                       (e.currentTarget as HTMLAnchorElement).style.color =
                         "rgba(255,255,255,0.8)";
                       (e.currentTarget as HTMLAnchorElement).style.background =

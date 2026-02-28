@@ -112,7 +112,7 @@ export default function ProblemSection() {
 
             {/* Actual card */}
             <div
-              className="rounded-xl p-6 h-full flex flex-col gap-4 relative"
+              className="rounded-xl p-6 h-full flex flex-col gap-4 relative glow-breath"
               style={{
                 background: "#0D0D0D",
                 border: "1px solid rgba(110,20,212,0.2)",

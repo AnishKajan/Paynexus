@@ -10,6 +10,7 @@ interface HulyButtonProps {
     style?: React.CSSProperties;
     type?: "button" | "submit" | "reset";
     disabled?: boolean;
+    glowColor?: "purple" | "white";
 }
 
 export default function HulyButton({
@@ -20,6 +21,7 @@ export default function HulyButton({
     style = {},
     type = "button",
     disabled = false,
+    glowColor = "purple",
 }: HulyButtonProps) {
     const [mPos, setMPos] = useState({ x: 0 });
     const [isHovered, setIsHovered] = useState(false);
@@ -39,17 +41,19 @@ export default function HulyButton({
 
     // Base styles for the button
     const baseClassName = `
-    relative overflow-hidden transition-all duration-300
+    relative transition-all duration-300
     flex items-center justify-center font-bold uppercase tracking-wider
-    rounded-full border
+    rounded-full border ${glowColor === "white" ? "btn-glow-breath-white" : "btn-glow-breath"}
     ${className}
   `;
 
+    // Strip boxShadow and borderColor from caller's style — the CSS animation controls these
+    const { boxShadow: _bs, borderColor: _bc, ...cleanStyle } = style;
+
     const integratedStyle: React.CSSProperties = {
         background: "#000000",
-        borderColor: isHovered ? "rgba(110, 20, 212, 0.5)" : "rgba(255, 255, 255, 0.1)",
         color: isHovered ? "#fff" : "rgba(255, 255, 255, 0.7)",
-        ...style,
+        ...cleanStyle,
         position: "relative",
         cursor: disabled ? "not-allowed" : "pointer",
         opacity: disabled ? 0.6 : 1,
@@ -58,7 +62,7 @@ export default function HulyButton({
     // The Huly glow effect layer
     const glowLayer = (
         <div
-            className="absolute inset-0 pointer-events-none transition-opacity duration-500"
+            className="absolute inset-0 pointer-events-none transition-opacity duration-500 overflow-hidden rounded-full"
             style={{
                 opacity: isHovered && !disabled ? 1 : 0,
                 zIndex: 0,
