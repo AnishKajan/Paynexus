@@ -38,6 +38,22 @@ export interface RiskFactor {
     affectedCountries?: string[];
 }
 
+export interface MorSummary {
+    activeRegions: number;
+    vatStatus: string;
+    nextPayout: string;
+    openDisputes: number;
+}
+
+export interface NexusTrigger {
+    id: string;
+    jurisdiction: string;
+    threshold: string;
+    current: string;
+    progress: number;
+    status: "Approaching" | "Triggered" | "Safe";
+}
+
 // ─── Transactions ─────────────────────────────────────────────────────────────
 export const TRANSACTIONS: Transaction[] = [
     {
@@ -235,4 +251,50 @@ export const RISK_FACTORS: RiskFactor[] = [
         trend: "up",
         suggestedAction: "Review KYC thresholds and onboarding risk tiers.",
     },
+];
+
+// ─── MoR Data ────────────────────────────────────────────────────────────────
+export const MOR_SUMMARY: Record<string, MorSummary> = {
+    sandbox: {
+        activeRegions: 12,
+        vatStatus: "Active (Test)",
+        nextPayout: "$0.00 (Sandbox)",
+        openDisputes: 0,
+    },
+    production: {
+        activeRegions: 54,
+        vatStatus: "Compliant",
+        nextPayout: "$14,250.00 · Mar 5",
+        openDisputes: 3,
+    },
+};
+
+export const MOR_COMPLIANCE_ITEMS: ComplianceItem[] = [
+    { id: "mor_c1", category: "Legal", name: "KYC Verification", status: "Compliant", detail: "Identity verification for all account owners and significant controllers (10%+).", lastChecked: "Feb 27, 2026" },
+    { id: "mor_c2", category: "Legal", name: "AML Program", status: "Compliant", detail: "Anti-Money Laundering policy and automated transaction monitoring active.", lastChecked: "Feb 27, 2026" },
+    { id: "mor_c3", category: "Security", name: "PCI DSS Compliance", status: "Compliant", detail: "Merchant of Record Level 1 PCI certification active.", lastChecked: "Feb 15, 2026" },
+    { id: "mor_c4", category: "Legal", name: "Data Retention", status: "Needs Review", detail: "Updated policy for 7-year financial record keeping needs signature.", lastChecked: "Jan 10, 2026" },
+    { id: "mor_c5", category: "Policy", name: "Refund Policy", status: "Compliant", detail: "Publicly accessible refund policy meets region-specific mandates.", lastChecked: "Feb 20, 2026" },
+    { id: "mor_c6", category: "Policy", name: "Terms of Service", status: "Compliant", detail: "Platform ToS includes required MOR disclosures (e.g. 'Paynexus' as seller).", lastChecked: "Feb 20, 2026" },
+    { id: "mor_c7", category: "Risk", name: "Chargeback Protection", status: "Missing", detail: "Enhanced chargeback representment service not enabled.", lastChecked: "Feb 1, 2026" },
+];
+
+export const SUPPORTED_COUNTRIES = [
+    "United States", "Canada", "United Kingdom", "Germany", "France", "Italy", "Spain", "Netherlands",
+    "Sweden", "Norway", "Denmark", "Finland", "Ireland", "Belgium", "Austria", "Switzerland", "Japan",
+    "Australia", "Singapore", "New Zealand", "Portugal", "Poland", "Czech Republic", "Greece", "Israel",
+    "United Arab Emirates", "Brazil", "Mexico", "India", "South Africa", "South Korea", "Singapore",
+    "Malaysia", "Thailand", "Vietnam", "Philippines", "Turkey", "Saudi Arabia", "Argentina", "Chile",
+];
+
+export const BLOCKED_COUNTRIES_INITIAL = [
+    "North Korea", "Iran", "Syria", "Cuba", "Russia", "Belarus", "Crimea Region",
+];
+
+export const NEXUS_TRIGGERS: NexusTrigger[] = [
+    { id: "nex_1", jurisdiction: "California, US", threshold: "$500,000", current: "$482,000", progress: 96, status: "Approaching" },
+    { id: "nex_2", jurisdiction: "New York, US", threshold: "$100,000", current: "$104,200", progress: 100, status: "Triggered" },
+    { id: "nex_3", jurisdiction: "Texas, US", threshold: "$500,000", current: "$120,000", progress: 24, status: "Safe" },
+    { id: "nex_4", jurisdiction: "European Union (OSS)", threshold: "€10,000", current: "€14,800", progress: 100, status: "Triggered" },
+    { id: "nex_5", jurisdiction: "United Kingdom", threshold: "£85,000", current: "£12,000", progress: 14, status: "Safe" },
 ];

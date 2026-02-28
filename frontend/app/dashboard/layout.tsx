@@ -17,6 +17,7 @@ const NAV_ITEMS = [
     { label: "Dashboard", href: "/dashboard", icon: "◉" },
     { label: "Transactions", href: "/dashboard/transactions", icon: "⇄" },
     { label: "Compliance", href: "/dashboard/compliance", icon: "◈" },
+    { label: "MoR", href: "/dashboard/mor", icon: "⚖" },
     { label: "Risk", href: "/dashboard/risk", icon: "⚠" },
     { label: "API Keys", href: "/dashboard/api-keys", icon: "⚿" },
 ];
