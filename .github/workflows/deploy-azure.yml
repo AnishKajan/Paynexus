@@ -16,13 +16,15 @@
 #
 #  Required GitHub Secrets:
 #    AZURE_CLIENT_ID        AZURE_TENANT_ID        AZURE_SUBSCRIPTION_ID
-#    SUPABASE_JWT_SECRET    (only Supabase secret the Rust backend uses — HS256)
+#    SUPABASE_URL           SUPABASE_ANON_KEY
+#    SUPABASE_JWT_SECRET    SUPABASE_JWKS_URL
 #
 #  NOTE: GHCR package must be public (Package Settings → Change visibility).
 #        No registry credentials needed — public images pull without auth.
 #
-#  NOTE: Backend uses jsonwebtoken HS256 with SUPABASE_JWT_SECRET only.
-#        SUPABASE_ANON_KEY and SUPABASE_JWKS_URL are NOT used by the backend.
+#  NOTE: Secrets are injected via env: block (auto-masked in logs) and passed
+#        to the Container App as runtime environment variables. No secrets are
+#        hardcoded or echoed.
 #
 #  OIDC federated credential must match subject:
 #    repo:AnishKajan/Paynexus:ref:refs/heads/main
@@ -169,13 +171,16 @@ jobs:
           fi
 
       # ── 7. Create or update paynexus-api ──────────────────────────────────────
-      # NOTE: No registry credentials — GHCR package must be set to Public.
-      #       GITHUB_TOKEN expires after each run; public packages need no auth.
-      #       Backend uses HS256 JWT (jsonwebtoken crate) — only SUPABASE_JWT_SECRET needed.
+      # Secrets are loaded via env: (GitHub Actions auto-masks them in logs).
+      # They are passed as runtime env vars to the Container App — never echoed.
+      # No registry credentials: GHCR package must be Public (pull without auth).
       - name: Deploy paynexus-api
         id: deploy
         env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           SUPABASE_JWT_SECRET: ${{ secrets.SUPABASE_JWT_SECRET }}
+          SUPABASE_JWKS_URL: ${{ secrets.SUPABASE_JWKS_URL }}
         run: |
           IMAGE="${{ steps.tag.outputs.image }}"
 
@@ -200,11 +205,14 @@ jobs:
               --env-vars \
                 "PORT=8080" \
                 "PAYNEXUS_ENV=sandbox" \
+                "SUPABASE_URL=${SUPABASE_URL}" \
+                "SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}" \
                 "SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}" \
+                "SUPABASE_JWKS_URL=${SUPABASE_JWKS_URL}" \
               --output none
             echo "Container App created."
           else
-            echo "Container App exists — updating image and fixing env vars..."
+            echo "Container App exists — updating image and env vars..."
             az containerapp update \
               --name "${{ env.APP_NAME }}" \
               --resource-group "${{ env.RESOURCE_GROUP }}" \
@@ -212,7 +220,10 @@ jobs:
               --set-env-vars \
                 "PORT=8080" \
                 "PAYNEXUS_ENV=sandbox" \
+                "SUPABASE_URL=${SUPABASE_URL}" \
+                "SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}" \
                 "SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}" \
+                "SUPABASE_JWKS_URL=${SUPABASE_JWKS_URL}" \
               --output none
 
             # Remove stale registry credentials (GITHUB_TOKEN expires each run)
