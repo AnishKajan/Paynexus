@@ -52,126 +52,281 @@ body {
 
 /* Boot sequence animations */
 @keyframes cursorBlink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
 }
 
 @keyframes scanlineExpand {
-  0% { width: 0; opacity: 0; }
-  10% { opacity: 1; }
-  100% { width: 100%; opacity: 1; }
+  0% {
+    width: 0;
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  100% {
+    width: 100%;
+    opacity: 1;
+  }
 }
 
 @keyframes fadeUpIn {
-  0% { opacity: 0; transform: translateY(40px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeUpOut {
-  0% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-30px); }
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
 }
 
 @keyframes glowPulse {
-  0%, 100% { box-shadow: 0 0 8px rgba(110, 20, 212, 0.4), 0 0 20px rgba(110, 20, 212, 0.2); }
-  50% { box-shadow: 0 0 16px rgba(110, 20, 212, 0.8), 0 0 40px rgba(110, 20, 212, 0.4); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(110, 20, 212, 0.4), 0 0 20px rgba(110, 20, 212, 0.2);
+  }
+
+  50% {
+    box-shadow: 0 0 16px rgba(110, 20, 212, 0.8), 0 0 40px rgba(110, 20, 212, 0.4);
+  }
 }
 
 @keyframes electricArc {
-  0% { stroke-dashoffset: 1000; }
-  100% { stroke-dashoffset: 0; }
+  0% {
+    stroke-dashoffset: 1000;
+  }
+
+  100% {
+    stroke-dashoffset: 0;
+  }
 }
 
 @keyframes riskBarFill {
-  0% { width: 0%; }
+  0% {
+    width: 0%;
+  }
 }
 
 @keyframes stutter {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-1px); }
-  75% { transform: translateX(1px); }
-  100% { transform: translateX(0); }
+  0% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-1px);
+  }
+
+  75% {
+    transform: translateX(1px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
 }
 
 @keyframes pathDraw {
-  0% { stroke-dashoffset: 2000; }
-  100% { stroke-dashoffset: 0; }
+  0% {
+    stroke-dashoffset: 2000;
+  }
+
+  100% {
+    stroke-dashoffset: 0;
+  }
 }
 
 @keyframes nodeAppear {
-  0% { opacity: 0; transform: scale(0.3); }
-  60% { transform: scale(1.15); }
-  100% { opacity: 1; transform: scale(1); }
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+
+  60% {
+    transform: scale(1.15);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes circuitAppear {
-  0% { opacity: 0; transform: scale(0.85); }
-  100% { opacity: 1; transform: scale(1); }
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes slideFromLeft {
-  0% { opacity: 0; transform: translateX(-60px); }
-  100% { opacity: 1; transform: translateX(0); }
+  0% {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 @keyframes slideFromRight {
-  0% { opacity: 0; transform: translateX(60px); }
-  100% { opacity: 1; transform: translateX(0); }
+  0% {
+    opacity: 0;
+    transform: translateX(60px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 @keyframes slideFromBottom {
-  0% { opacity: 0; transform: translateY(60px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% {
+    opacity: 0;
+    transform: translateY(60px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes slideInFromRight {
-  0% { opacity: 0; transform: translateX(40px); }
-  100% { opacity: 1; transform: translateX(0); }
+  0% {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 @keyframes slideInFromLeft {
-  0% { opacity: 0; transform: translateX(-40px); }
-  100% { opacity: 1; transform: translateX(0); }
+  0% {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 @keyframes scaleIn {
-  0% { opacity: 0; transform: scale(0.3); }
-  60% { transform: scale(1.1); }
-  100% { opacity: 1; transform: scale(1); }
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+
+  60% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes progressFill {
-  0% { width: 0%; }
-  100% { width: 100%; }
+  0% {
+    width: 0%;
+  }
+
+  100% {
+    width: 100%;
+  }
 }
 
 @keyframes criticalPulse {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
   }
+
   50% {
     box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
   }
 }
 
 @keyframes terminalLine {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes popoverSlideUp {
-  from { opacity: 0; transform: translateY(8px) scale(0.96); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @keyframes modalSlideUp {
-  from { opacity: 0; transform: translateY(20px) scale(0.97); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* Utility classes */
@@ -179,17 +334,131 @@ body {
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
 }
 
-.text-brand-purple { color: #6E14D4; }
-.text-brand-green { color: #22C55E; }
-.text-brand-blue { color: #3B82F6; }
-.text-brand-amber { color: #F59E0B; }
-.text-brand-red { color: #EF4444; }
-.bg-brand-dark { background: #0D0D0D; }
-.bg-brand-purple { background: #6E14D4; }
-.border-brand-purple { border-color: #6E14D4; }
+.text-brand-purple {
+  color: #6E14D4;
+}
+
+.text-brand-green {
+  color: #22C55E;
+}
+
+.text-brand-blue {
+  color: #3B82F6;
+}
+
+.text-brand-amber {
+  color: #F59E0B;
+}
+
+.text-brand-red {
+  color: #EF4444;
+}
+
+.bg-brand-dark {
+  background: #0D0D0D;
+}
+
+.bg-brand-purple {
+  background: #6E14D4;
+}
+
+.border-brand-purple {
+  border-color: #6E14D4;
+}
 
 .glow-purple {
   box-shadow: 0 0 20px rgba(110, 20, 212, 0.5), 0 0 40px rgba(110, 20, 212, 0.2);
+}
+
+/* ── Breathing glow for landing page sections / cards ──────────────────────── */
+@keyframes sectionGlowBreath {
+
+  0%,
+  100% {
+    box-shadow: 0 0 12px rgba(110, 20, 212, 0.08),
+      0 0 24px rgba(110, 20, 212, 0.04),
+      0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 24px rgba(110, 20, 212, 0.2),
+      0 0 48px rgba(110, 20, 212, 0.1),
+      0 8px 32px rgba(110, 20, 212, 0.08);
+  }
+}
+
+@keyframes sectionGlowBreathStrong {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(110, 20, 212, 0.12),
+      0 0 40px rgba(110, 20, 212, 0.06),
+      0 4px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 0 40px rgba(110, 20, 212, 0.3),
+      0 0 80px rgba(110, 20, 212, 0.15),
+      0 12px 48px rgba(110, 20, 212, 0.12);
+  }
+}
+
+.glow-breath {
+  animation: sectionGlowBreath 4s ease-in-out infinite;
+}
+
+.glow-breath-strong {
+  animation: sectionGlowBreathStrong 4s ease-in-out infinite;
+}
+
+@keyframes buttonGlowBreath {
+
+  0%,
+  100% {
+    border-color: rgba(110, 20, 212, 0.3);
+    box-shadow: 0 0 25px rgba(110, 20, 212, 0.5),
+      0 0 50px rgba(110, 20, 212, 0.3),
+      inset 0 0 20px rgba(110, 20, 212, 0.15),
+      0 8px 32px rgba(110, 20, 212, 0.2);
+  }
+
+  50% {
+    border-color: rgba(110, 20, 212, 1);
+    box-shadow: 0 0 50px rgba(110, 20, 212, 0.8),
+      0 0 100px rgba(110, 20, 212, 0.5),
+      inset 0 0 45px rgba(110, 20, 212, 0.3),
+      0 12px 48px rgba(110, 20, 212, 0.4);
+  }
+}
+
+@keyframes buttonGlowBreathWhite {
+
+  0%,
+  100% {
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.15),
+      0 0 50px rgba(255, 255, 255, 0.1),
+      inset 0 0 20px rgba(255, 255, 255, 0.05),
+      0 8px 32px rgba(255, 255, 255, 0.05);
+  }
+
+  50% {
+    border-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 50px rgba(255, 255, 255, 0.4),
+      0 0 100px rgba(255, 255, 255, 0.2),
+      inset 0 0 45px rgba(255, 255, 255, 0.1),
+      0 12px 48px rgba(255, 255, 255, 0.1);
+  }
+}
+
+.btn-glow-breath {
+  animation: buttonGlowBreath 4s ease-in-out infinite;
+  border-color: rgba(110, 20, 212, 0.3);
+}
+
+.btn-glow-breath-white {
+  animation: buttonGlowBreathWhite 4s ease-in-out infinite;
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .grid-bg {
@@ -234,7 +503,10 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
