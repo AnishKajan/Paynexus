@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import HulyButton from "../components/HulyButton";
@@ -256,31 +256,16 @@ export default function OnboardingWizard() {
         setCurrentStep((s) => Math.max(s - 1, 0));
     };
 
-    // ── Submit (Best Effort Create Org) ──────────────────────────────────────
-    const handleSubmit = async () => {
+    // ── Submit (UI only — no database) ───────────────────────────────────────
+    const handleSubmit = () => {
         if (!validateStep()) return;
         setLoading(true);
         setError("");
-
-        try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                // Best effort create organization
-                await (supabase.from("organizations") as any)
-                    .insert({
-                        name: form.legalName.trim(),
-                        owner_user_id: user.id
-                    });
-            }
-        } catch (err: any) {
-            // Ignore database errors and force success for demo/hackathon purposes
-            console.error("Organization creation failed, but proceeding anyway:", err);
-        }
-
-        // Always succeed
-        setLoading(false);
-        setSuccess(true);
-        setTimeout(() => router.replace("/dashboard"), 2500);
+        setTimeout(() => {
+            setLoading(false);
+            setSuccess(true);
+            setTimeout(() => router.replace("/dashboard"), 2500);
+        }, 800);
     };
 
     // ── Loading state ─────────────────────────────────────────────────────────
