@@ -239,7 +239,7 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
         const { error: authError } = await supabase.auth.signInWithOAuth({
             provider: "google",
             options: {
-                redirectTo: `${window.location.origin}${mode === "signup" ? "/onboarding" : "/dashboard"}`,
+                redirectTo: `${window.location.origin}/auth/callback?next=${mode === "signup" ? "/onboarding" : "/dashboard"}`,
             },
         });
         if (authError) {
