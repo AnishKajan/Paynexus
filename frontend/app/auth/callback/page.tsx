@@ -15,25 +15,15 @@ export default function AuthCallbackPage() {
             if (!redirected) {
                 redirected = true;
 
-                // Get session for user id
                 const { data: { session } } = await supabase.auth.getSession();
                 if (!session) {
                     router.replace("/login");
                     return;
                 }
 
-                // Check if user has an organization
-                const { data: members } = await supabase
-                    .from("organization_members")
-                    .select("org_id")
-                    .eq("user_id", session.user.id)
-                    .limit(1);
-
-                if (!members || members.length === 0) {
-                    router.replace("/onboarding");
-                } else {
-                    router.replace("/dashboard");
-                }
+                // Onboarding is UI-only; track completion in localStorage
+                const onboarded = localStorage.getItem(`onboarded_${session.user.id}`);
+                router.replace(onboarded ? "/dashboard" : "/onboarding");
             }
         };
 

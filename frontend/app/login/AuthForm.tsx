@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
-import Link from "next/link";
 import HulyButton from "../components/HulyButton";
 
 // ─── Google logo SVG ──────────────────────────────────────────────────────────
@@ -80,22 +79,11 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
 
     // ── Session check on mount ──────────────────────────────────────────────────
     useEffect(() => {
-        supabase.auth.getSession().then(async ({ data }) => {
+        supabase.auth.getSession().then(({ data }) => {
             if (data.session) {
-                // If logged in, check if user has an organization
-                // Querying the members table specifically by user_id to avoid RLS caching/timing issues on new accounts
-                const userId = data.session.user.id;
-                const { data: members } = await supabase
-                    .from("organization_members")
-                    .select("org_id")
-                    .eq("user_id", userId)
-                    .limit(1);
-
-                if (!members || members.length === 0) {
-                    router.replace("/onboarding");
-                } else {
-                    router.replace("/dashboard");
-                }
+                // Onboarding is UI-only; completion tracked in localStorage
+                const onboarded = localStorage.getItem(`onboarded_${data.session.user.id}`);
+                router.replace(onboarded ? "/dashboard" : "/onboarding");
             } else {
                 setSessionChecked(true);
             }
@@ -188,7 +176,9 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
             setError(authError.message);
             return;
         }
-        router.replace(mode === "signup" ? "/onboarding" : "/dashboard");
+        const { data: { user } } = await supabase.auth.getUser();
+        const onboarded = user ? localStorage.getItem(`onboarded_${user.id}`) : null;
+        router.replace(mode === "signup" || !onboarded ? "/onboarding" : "/dashboard");
     };
 
     // ── OTP input change ───────────────────────────────────────────────────────

@@ -256,16 +256,21 @@ export default function OnboardingWizard() {
         setCurrentStep((s) => Math.max(s - 1, 0));
     };
 
-    // ── Submit (UI only — no database) ───────────────────────────────────────
+    // ── Submit (UI only — marks onboarding complete in localStorage) ─────────
     const handleSubmit = () => {
         if (!validateStep()) return;
         setLoading(true);
         setError("");
-        setTimeout(() => {
-            setLoading(false);
-            setSuccess(true);
-            setTimeout(() => router.replace("/dashboard"), 2500);
-        }, 800);
+        supabase.auth.getUser().then(({ data: { user } }) => {
+            if (user) {
+                localStorage.setItem(`onboarded_${user.id}`, "true");
+            }
+            setTimeout(() => {
+                setLoading(false);
+                setSuccess(true);
+                setTimeout(() => router.replace("/dashboard"), 2500);
+            }, 800);
+        });
     };
 
     // ── Loading state ─────────────────────────────────────────────────────────
