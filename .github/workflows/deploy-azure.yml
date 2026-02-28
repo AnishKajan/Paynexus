@@ -78,9 +78,12 @@ jobs:
         id: tag
         run: |
           TAG="${{ github.event.inputs.image_tag || 'latest' }}"
+          # GHCR requires all-lowercase owner — github.repository_owner preserves original case
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
-          echo "image=ghcr.io/${{ github.repository_owner }}/paynexus-backend:${TAG}" >> "$GITHUB_OUTPUT"
-          echo "Deploying: ghcr.io/${{ github.repository_owner }}/paynexus-backend:${TAG}"
+          echo "owner=${OWNER}" >> "$GITHUB_OUTPUT"
+          echo "image=ghcr.io/${OWNER}/paynexus-backend:${TAG}" >> "$GITHUB_OUTPUT"
+          echo "Deploying: ghcr.io/${OWNER}/paynexus-backend:${TAG}"
 
       # ── 3. Register providers (best-effort — requires subscription Contributor)
       # Azure auto-registers providers on first resource creation, so this step
@@ -188,7 +191,7 @@ jobs:
               --environment "${{ env.CAE_NAME }}" \
               --image "${IMAGE}" \
               --registry-server "ghcr.io" \
-              --registry-username "${{ github.repository_owner }}" \
+              --registry-username "${{ steps.tag.outputs.owner }}" \
               --registry-password "${GHCR_TOKEN}" \
               --target-port 8080 \
               --ingress external \
