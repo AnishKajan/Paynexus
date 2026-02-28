@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { COMPLIANCE_ITEMS, ComplianceItem } from "@/lib/mockData";
+import GNNRiskPanel from "./GNNRiskPanel";
 
 const statusConfig = {
     "Compliant": { color: "#22c55e", bg: "rgba(34,197,94,0.08)", border: "rgba(34,197,94,0.25)", dot: "●" },
@@ -75,6 +76,9 @@ export default function CompliancePage() {
                     Merchant of Record · KYC/AML · Tax · Data · Security
                 </p>
             </div>
+
+            {/* GNN Risk Intelligence Panel */}
+            <GNNRiskPanel />
 
             {/* Summary cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
